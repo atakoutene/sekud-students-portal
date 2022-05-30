@@ -83,8 +83,7 @@ public class HomeController implements Initializable {
 
     private void setMyClassesToday() {
         ArrayList<Object> objects
-                = manager.getSchedule(studentInfo.getIdProgram(),
-                        studentInfo.getIdLevel(),
+                = manager.getSchedule(studentInfo,
                         dateUtil.getWeekDay());
         
         schedules = (ArrayList<CourseSchedule>) objects.get(0);

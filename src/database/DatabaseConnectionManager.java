@@ -142,7 +142,7 @@ public class DatabaseConnectionManager {
         return null;
     }
 
-    public ArrayList<Object> getSchedule(int idProgram, int idLevel,
+    public ArrayList<Object> getSchedule(Student student,
             String day) {
 
         ArrayList<CourseSchedule> schedules = new ArrayList<>();
@@ -151,19 +151,17 @@ public class DatabaseConnectionManager {
         String query = "SELECT `sched_id`, course_schedule.`course_id`, "
                 + "`sched_day`, `start_time`, `end_time`, `room`, course.course_title "
                 + "FROM `course_schedule` "
-                + "JOIN course ON course_schedule.course_id = course.course_id "
-                + "JOIN program_course ON course_schedule.course_id "
-                + "= program_course.course_id "
-                + "WHERE program_course.program_id = ? AND "
-                + "program_course.level_id = ? AND "
-                + "sched_day = ? "
+                + "JOIN course USING (course_id) "
+                + "JOIN enrollment USING (course_id) "
+                + "JOIN student USING (stud_id) "
+                + "WHERE stud_id = ? AND sched_day = ? AND enrollment.semester_id = ? "
                 + "ORDER BY start_time ASC;";
 
         try {
             PreparedStatement prepStatement = connection.prepareStatement(query);
-            prepStatement.setInt(1, idProgram);
-            prepStatement.setInt(2, idLevel);
-            prepStatement.setString(3, day);
+            prepStatement.setString(1, student.getId());
+            prepStatement.setString(2, day);
+            prepStatement.setInt(3, 9); // Semester id is hard coded (SPRING 2022)
 
             ResultSet rs = prepStatement.executeQuery();
             while (rs.next()) {
@@ -201,36 +199,35 @@ public class DatabaseConnectionManager {
                 + "JOIN program ON timetable.depart_id = program.depart_id "
                 + "WHERE semester.semester_name = ? AND "
                 + "semester.semester_year = ? AND "
-                + "program.prog_id = ? ;" ;
-        
+                + "program.prog_id = ? ;";
+
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, semester);
             ps.setInt(2, year);
             ps.setInt(3, idProgram);
-            
-            ResultSet rs = ps.executeQuery() ;
-            if (rs.next()){
+
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
                 try {
                     // Set up a handle to the output file
-                    File timetableFile = new File("timetable.pdf") ;
-                    FileOutputStream output = new FileOutputStream(timetableFile) ;
-                    
+                    File timetableFile = new File("timetable.pdf");
+                    FileOutputStream output = new FileOutputStream(timetableFile);
+
                     // Read Blob and store in output file
-                    InputStream input = rs.getBinaryStream("timetable") ;
-                    byte[] buffer = new byte[10*1024] ;
-                    while( input.read(buffer) > 0)
+                    InputStream input = rs.getBinaryStream("timetable");
+                    byte[] buffer = new byte[10 * 1024];
+                    while (input.read(buffer) > 0) {
                         output.write(buffer);
-                    
-                    return (
-                            new Timetable(
-                                    rs.getInt("timetable_id"), 
-                                    rs.getInt("semester_id"), 
-                                    rs.getInt("depart_id"), 
-                                    timetableFile) 
-                            );
-                } catch (IOException e){
-                    System.out.println("GET TIMETABLE ERROR: " 
+                    }
+
+                    return (new Timetable(
+                            rs.getInt("timetable_id"),
+                            rs.getInt("semester_id"),
+                            rs.getInt("depart_id"),
+                            timetableFile));
+                } catch (IOException e) {
+                    System.out.println("GET TIMETABLE ERROR: "
                             + e.getMessage());
                 }
             }
@@ -238,7 +235,7 @@ public class DatabaseConnectionManager {
             System.out.println("GET TIMETABLE ERROR: "
                     + e.getMessage());
         }
-        
-        return null ;
+
+        return null;
     }
 }
