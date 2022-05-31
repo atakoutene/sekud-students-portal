@@ -5,20 +5,24 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
+import javafx.scene.control.Accordion;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import main.Main;
 import models.Course;
 import models.CourseSchedule;
+import models.Lecturer;
 import models.Login;
 import models.Person;
+import models.Semester;
 import models.Student;
 import models.Timetable;
 import util.MyDate;
@@ -30,12 +34,16 @@ import util.MyDate;
  */
 public class HomeController implements Initializable {
 
+    MyDate dateUtil = new MyDate();
     Login loginInfo;
     Person personalInfo;
     Student studentInfo;
     Timetable timetable;
+    Semester currentSemeter ;
+    
     ArrayList<CourseSchedule> schedules;
-    MyDate dateUtil = new MyDate();
+    ArrayList<Course> enrolledCourses ;
+    
     DatabaseConnectionManager manager
             = new DatabaseConnectionManager();
 
@@ -45,6 +53,9 @@ public class HomeController implements Initializable {
     @FXML
     private Label dateTimeLabel;
 
+    @FXML
+    private Accordion myCoursesContainer;
+    
     @FXML
     private ImageView userPhoto;
 
@@ -72,18 +83,73 @@ public class HomeController implements Initializable {
         if (loginInfo.getType().equalsIgnoreCase("STUDENT")) {
             studentInfo = manager.getStudentInfo(loginInfo.getRegNumber());
             timetable = manager.getTimetable(studentInfo.getIdProgram(), "Spring", 2022);
+            currentSemeter = manager.getCurrentSemester() ;
 
             setMyClassesToday();
+            setMyCourses();
         }
 
         setWelcomeLabel();
         setDateTimeLabel();
         setProfilePicture();
     }
+    
+    private void setMyCourses() {
+        ArrayList<Object> objects = 
+                manager.getEnrolledCoursesAndLecturerInfo(studentInfo.getId(), currentSemeter.getId()) ;
+        if ( ! objects.isEmpty() ){
+            enrolledCourses = (ArrayList<Course>) objects.get(0) ;
+            ArrayList<Lecturer> lecturers = (ArrayList<Lecturer>) objects.get(1) ;
+            ArrayList<Person> lecturerPersonInfos = (ArrayList<Person>) objects.get(2) ;
+            
+            if ( ! enrolledCourses.isEmpty() ){
+                for (int i=0; i < enrolledCourses.size(); i++){
+                    Course course = enrolledCourses.get(i) ;
+                    Person lecturer = lecturerPersonInfos.get(i) ;
+                    
+                    TitledPane titledPane = new TitledPane();
+                    titledPane.setText(course.getTitle());
+                    
+                    
+                    Label descriptionLabel = new Label(course.getDescription()) ;
+                    descriptionLabel.setWrapText(true);
+                    
+                    Label lecturerLabel = new Label("Taught by: "
+                            + lecturer.toString());
+                    lecturerLabel.setWrapText(true);
+                    
+                    Label creditAndGradeLabel = new Label("Credit hours: "
+                            + course.getCredit() + "\t Passing grade: "
+                            + course.getPassingGrade());
+                    creditAndGradeLabel.setWrapText(true);
+                                        
+                    HBox hBox = new HBox(15) ;
+                    hBox.setAlignment(Pos.CENTER);
+                    
+                    Button btnAssessMark = new Button("Assessment marks") ;
+                    Button btnAttendance = new Button("Attendance") ;
+                    Button btnResources = new Button("Resources") ;
+                    Button btnSyllabus = new Button("Syllabus") ;
+                    
+                    hBox.getChildren().addAll(btnAssessMark, btnAttendance,
+                            btnResources, btnSyllabus) ;
+                    
+                    VBox vBox = new VBox(10) ;
+                    vBox.getChildren().add(descriptionLabel) ;
+                    vBox.getChildren().add(lecturerLabel) ;
+                    vBox.getChildren().add(creditAndGradeLabel) ;
+                    vBox.getChildren().add(hBox) ;
+                    
+                    titledPane.setContent(vBox);
+                    myCoursesContainer.getPanes().add(titledPane) ;
+                }
+            }
+        }
+    }
 
     private void setMyClassesToday() {
         ArrayList<Object> objects
-                = manager.getSchedule(studentInfo,
+                = manager.getSchedule(studentInfo, currentSemeter.getId(),
                         dateUtil.getWeekDay());
         
         schedules = (ArrayList<CourseSchedule>) objects.get(0);
@@ -101,6 +167,7 @@ public class HomeController implements Initializable {
 
                 Label classToday = new Label(periodAndHall
                         + " \n  " + content);
+                classToday.setWrapText(true);
 
                 boxClassesToday.getChildren().add(classToday);
             }

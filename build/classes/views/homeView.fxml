@@ -255,25 +255,7 @@
                <children>
                   <TitledPane collapsible="false" text="My Courses" textFill="#112d4e">
                      <content>
-                        <Accordion>
-                           <panes>
-                              <TitledPane animated="false" text="General Chemistry">
-                                 <content>
-                                    <ListView />
-                                 </content>
-                              </TitledPane>
-                              <TitledPane animated="false" text="Principle of Physics 1">
-                                 <content>
-                                    <ListView />
-                                 </content>
-                              </TitledPane>
-                              <TitledPane animated="false" text="Introduction to C Programming">
-                                 <content>
-                                    <ListView />
-                                 </content>
-                              </TitledPane>
-                           </panes>
-                        </Accordion>
+                        <Accordion fx:id="myCoursesContainer" />
                      </content>
                      <font>
                         <Font name="Gabriola" size="20.0" />

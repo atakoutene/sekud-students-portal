@@ -11,10 +11,13 @@ import java.util.logging.Logger;
 import javafx.scene.image.Image;
 import models.Course;
 import models.CourseSchedule;
+import models.Lecturer;
 import models.Login;
 import models.Person;
+import models.Semester;
 import models.Student;
 import models.Timetable;
+import util.MyDate;
 
 /**
  *
@@ -142,7 +145,7 @@ public class DatabaseConnectionManager {
         return null;
     }
 
-    public ArrayList<Object> getSchedule(Student student,
+    public ArrayList<Object> getSchedule(Student student, int idSemester,
             String day) {
 
         ArrayList<CourseSchedule> schedules = new ArrayList<>();
@@ -161,7 +164,7 @@ public class DatabaseConnectionManager {
             PreparedStatement prepStatement = connection.prepareStatement(query);
             prepStatement.setString(1, student.getId());
             prepStatement.setString(2, day);
-            prepStatement.setInt(3, 9); // Semester id is hard coded (SPRING 2022)
+            prepStatement.setInt(3, idSemester);
 
             ResultSet rs = prepStatement.executeQuery();
             while (rs.next()) {
@@ -237,5 +240,96 @@ public class DatabaseConnectionManager {
         }
 
         return null;
+    }
+
+    public Semester getCurrentSemester() {
+        Semester semester = new Semester();
+
+        String query = "SELECT `semester_id`, `semester_name`, `semester_year` "
+                + "FROM `semester` WHERE `semester_name`= ? "
+                + "AND `semester_year`= ? ;";
+        // Set the semester name from the current date
+        MyDate md = new MyDate();
+        String semName = "Spring";
+        if (md.getMonth() > 7) // Fall semester starts from september
+        {
+            semName = "Fall";
+        }
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, semName);
+            ps.setInt(2, md.getYear());
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                semester.setId(rs.getInt("semester_id"));
+                semester.setName(rs.getString("semester_name"));
+                semester.setYear(rs.getInt("semester_year"));
+            }
+        } catch (SQLException e) {
+            System.out.println("GET CURRENT SEMESTER ERROR: " + e.getMessage());
+        }
+
+        return semester;
+    }
+
+    public ArrayList<Object> getEnrolledCoursesAndLecturerInfo(String idStudent, int idSemester) {
+        ArrayList<Object> infos = new ArrayList<>();
+
+        String query = "SELECT course.`course_id`, `course_title`, "
+                + "`course_description`, `course_credit`, "
+                + "`course_passing_score`, `course_syllabus`, "
+                + "`lect_id`, person.per_id, person.per_last_name, "
+                + "person.per_first_name, person.per_phone_number, "
+                + "person.per_email, person.per_title "
+                + "FROM `course` JOIN enrollment USING (course_id) "
+                + "JOIN lecturer USING (lect_id) JOIN person USING (per_id) "
+                + "WHERE enrollment.stud_id = ? AND enrollment.semester_id = ? ;";
+
+        ArrayList<Course> courses = new ArrayList<>();
+        ArrayList<Lecturer> lecturers = new ArrayList<>();
+        ArrayList<Person> persons = new ArrayList<>();
+
+        try {
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, idStudent);
+            ps.setInt(2, idSemester);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                courses.add(new Course(
+                        rs.getString("course_id"),
+                        rs.getString("course_title"),
+                        rs.getString("course_description"),
+                        rs.getInt("course_credit"),
+                        rs.getInt("course_passing_score"),
+                        null,
+                        rs.getInt("lect_id")
+                ));
+                lecturers.add(new Lecturer(
+                        rs.getInt("lect_id"),
+                        rs.getInt("per_id")
+                ));
+                persons.add(new Person(
+                        rs.getInt("per_id"),
+                        rs.getString("per_last_name"),
+                        rs.getString("per_first_name"),
+                        rs.getString("per_phone_number"),
+                        rs.getString("per_email"),
+                        rs.getString("per_title")
+                ));
+            }
+
+            infos.add(courses);
+            infos.add(lecturers);
+            infos.add(persons);
+
+        } catch (SQLException e) {
+            System.out.println(
+                    "GET ENROLLED COURSES AND LECTURE INFO ERROR: "
+                    + e.getMessage());
+        }
+
+        return infos;
     }
 }
