@@ -4,10 +4,7 @@ import database.DatabaseConnectionManager;
 import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.animation.FadeTransition;
-import javafx.animation.KeyFrame;
-import javafx.animation.Timeline;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
@@ -38,7 +35,7 @@ public class LoginController implements Initializable {
 
     @FXML
     private Button btnSignIn;
-    
+
     @FXML
     private TextField loginInput;
 
@@ -47,10 +44,10 @@ public class LoginController implements Initializable {
 
     @FXML
     private Label warningLabel;
-    
+
     @FXML
     private Label welcomeText;
-    
+
     @FXML
     void cancelHandler(ActionEvent event) {
         // Close the window that originated the event
@@ -63,7 +60,7 @@ public class LoginController implements Initializable {
     void signInHandler(ActionEvent event) throws Exception {
         DatabaseConnectionManager manager = new DatabaseConnectionManager();
         Login user = manager.checkLogin(new Login(loginInput.getText(), pwdInput.getText()));
-        
+
         if (user.getId() != 0) {
             Alert ok = new Alert(Alert.AlertType.INFORMATION);
             ok.setTitle("Connection successful");
@@ -90,55 +87,55 @@ public class LoginController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Add the logo as label graphic to the welcome text
         setUpLogo();
-        
+
         // Enable the validation of the form using "Enter" key
         loginInput.setOnKeyReleased((event) -> {
-            if ( event.getCode() == KeyCode.ENTER ){
+            if (event.getCode() == KeyCode.ENTER) {
                 validateInput();
             }
         });
         pwdInput.setOnKeyReleased((event) -> {
-            if ( event.getCode() == KeyCode.ENTER ){
+            if (event.getCode() == KeyCode.ENTER) {
                 validateInput();
             }
         });
     }
-    
+
     private void validateInput() {
-        String login = loginInput.getText() ;
-        String password = pwdInput.getText() ;
-                
-        if (login.isEmpty()){
-            animateField(loginInput) ;
-            return ;
+        String login = loginInput.getText();
+        String password = pwdInput.getText();
+
+        if (login.isEmpty()) {
+            animateField(loginInput);
+            return;
         }
-        if (password.isEmpty()){
+        if (password.isEmpty()) {
             animateField(pwdInput);
-            return ;
+            return;
         }
-        
-        if (login.length() < 6){
+
+        if (login.length() < 6) {
             warningLabel.setText("Invalid username.");
             warningLabel.setVisible(true);
-            return ;
+            return;
         }
-        
-        if (password.length() < 4){
+
+        if (password.length() < 4) {
             warningLabel.setText("Password too short.");
             warningLabel.setVisible(true);
-            return ;
+            return;
         }
-        
-        if (login.length() >= 6 && password.length() >= 4){
+
+        if (login.length() >= 6 && password.length() >= 4) {
             btnSignIn.fire();
         }
-        
+
     }
-    
-    private void animateField(Node node){
+
+    private void animateField(Node node) {
         // Set the bg color of the field to red
         node.setStyle("-fx-background-color: "
-                    + "linear-gradient(#FF5050, #FF0000); ");
+                + "linear-gradient(#FF5050, #FF0000); ");
         // Create a flashing animation on the field
         FadeTransition animation = new FadeTransition(
                 Duration.millis(500), node);

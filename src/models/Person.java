@@ -36,6 +36,14 @@ public class Person {
         this.title = title;
     }
 
+    public Person(String lastName, String firstName, 
+            String phoneNumber, String email) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
     public Person(int id, int idLogin, String lastName, String firstName,
             char gender, Date dateOfBirth, String phoneNumber,
             String address, String email, Image photo, String pseudo,

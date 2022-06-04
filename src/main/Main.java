@@ -21,6 +21,8 @@ public class Main extends Application {
     public static final String APP_NAME = "Sek\u00F9d";
 
     private static Stage stage;
+    
+    HostServices hostServices = getHostServices();
 
     public static Stage getStage() {
         return stage;
@@ -34,17 +36,26 @@ public class Main extends Application {
                 new Image(Main.class.getResourceAsStream("../images/sekud-logo.jpg")));
         setStage(APP_NAME + " - Login", "../views/LoginView.fxml");
     }
+    
+    public static void loadLoginView(ActionEvent event) throws Exception{
+        closeView(event);
+        setStage(APP_NAME + " - Login", "../views/LoginView.fxml");
+    }
 
     public static void loadHomeView(ActionEvent event, Login loginInfo)
             throws Exception {
         // Close the log in windows
-        Node node = (Node) event.getSource();
-        stage = (Stage) node.getScene().getWindow();
-        stage.close();
+        closeView(event);
 
         stage.setUserData(loginInfo); // Set data for home view
         // Launch home view
         setStage(APP_NAME + " - Home", "../views/homeView.fxml");
+    }
+    
+    private static void closeView(ActionEvent event) {
+        Node node = (Node) event.getSource();
+        stage = (Stage) node.getScene().getWindow();
+        stage.close();
     }
 
     // Method to open new scene whose title is "title" and 
@@ -65,10 +76,13 @@ public class Main extends Application {
     }
 
     public void viewPDF(File file) {
-        HostServices hostServices = getHostServices();
         hostServices.showDocument(file.getAbsolutePath());
     }
 
+    public void openBrowser(String url) {
+        hostServices.showDocument(url);
+    }
+    
     /**
      * @param args the command line arguments
      */

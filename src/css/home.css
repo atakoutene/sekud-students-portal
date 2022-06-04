@@ -33,4 +33,10 @@
 
 .button:hover {
     -fx-background-color: linear-gradient(#0C5070,#11719E) ; 
+    -fx-text-fill: #D1AC6D ;
+}
+
+.separator .line{
+    -fx-border-color: #D1AC6D;
+    -fx-border-width: 2 ;
 }
