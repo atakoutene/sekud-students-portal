@@ -277,7 +277,8 @@ public class DatabaseConnectionManager {
                 + "person.per_email, person.per_title "
                 + "FROM `course` JOIN enrollment USING (course_id) "
                 + "JOIN lecturer USING (lect_id) JOIN person USING (per_id) "
-                + "WHERE enrollment.stud_id = ? AND enrollment.semester_id = ? ;";
+                + "WHERE enrollment.stud_id = ? AND enrollment.semester_id = ? "
+                + "ORDER BY course_title ASC;";
 
         ArrayList<Course> courses = new ArrayList<>();
         ArrayList<Person> persons = new ArrayList<>();
@@ -428,7 +429,8 @@ public class DatabaseConnectionManager {
                 + "JOIN student USING (`stud_id`) "
                 + "JOIN person USING (per_id) "
                 + "WHERE `stud_id` != ? AND `program_id` = ? "
-                + "AND `semester_id`=? ;" ;
+                + "AND `semester_id`=? "
+                + "ORDER BY person.per_last_name ASC;" ;
         
         try {
             PreparedStatement ps = connection.prepareStatement(query) ;
@@ -469,7 +471,7 @@ public class DatabaseConnectionManager {
         String query = "SELECT `ass_id`, `ass_mark`, `ass_date` "
                 + "FROM `assignment_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
-                + "ORDER BY `ass_date` DESC";
+                + "ORDER BY `ass_date` ASC";
         try {
             PreparedStatement ps = connection.prepareStatement(query) ;
             ps.setString(1, idStudent);
@@ -517,7 +519,7 @@ public class DatabaseConnectionManager {
         String query = "SELECT `quiz_id`,`quiz_mark`,`quiz_date` "
                 + "FROM `quiz_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
-                + "ORDER BY `quiz_date` DESC;";
+                + "ORDER BY `quiz_date` ASC;";
         try {
             PreparedStatement ps = connection.prepareStatement(query) ;
             ps.setString(1, idStudent);
@@ -565,7 +567,7 @@ public class DatabaseConnectionManager {
         String query = "SELECT `test_id`,`test_mark`,`test_date` "
                 + "FROM `test_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
-                + "ORDER BY `test_date` DESC ;";
+                + "ORDER BY `test_date` ASC ;";
         try {
             PreparedStatement ps = connection.prepareStatement(query) ;
             ps.setString(1, idStudent);
@@ -613,7 +615,7 @@ public class DatabaseConnectionManager {
         String query = "SELECT `project_id`,project_name,`project_mark`,`project_date` "
                 + "FROM `project_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
-                + "ORDER BY `project_date` DESC ;";
+                + "ORDER BY `project_date` ASC ;";
         try {
             PreparedStatement ps = connection.prepareStatement(query) ;
             ps.setString(1, idStudent);

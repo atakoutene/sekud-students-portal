@@ -67,7 +67,7 @@
                   <Insets top="10.0" />
                </GridPane.margin>
             </Label>
-            <ImageView fx:id="userPhoto" fitHeight="60.0" fitWidth="60.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="CENTER">
+            <ImageView fx:id="userPhoto" fitHeight="80.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="5" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.rowSpan="2" GridPane.valignment="CENTER">
                <image>
                   <Image url="@../images/icons/student_female2.png" />
                </image>
@@ -213,7 +213,7 @@
       </HBox>
    </bottom>
    <center>
-      <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
+      <ScrollPane fx:id="mainScrollPane"  fitToWidth="true" BorderPane.alignment="CENTER">
          <content>
             <VBox fx:id="mainContainer" spacing="10.0">
                <children>

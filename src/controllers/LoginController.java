@@ -24,6 +24,7 @@ import javafx.scene.shape.Ellipse;
 import javafx.scene.shape.StrokeType;
 import javafx.stage.Stage;
 import javafx.util.Duration;
+import main.Main;
 import models.Login;
 
 /**
@@ -62,18 +63,19 @@ public class LoginController implements Initializable {
         Login user = manager.checkLogin(new Login(loginInput.getText(), pwdInput.getText()));
 
         if (user.getId() != 0) {
-            Alert ok = new Alert(Alert.AlertType.INFORMATION);
-            ok.setTitle("Connection successful");
-            ok.setHeaderText("You provided the correct credentials.");
-            ok.showAndWait();
+            (new Main()).showAlert(
+                    Alert.AlertType.INFORMATION,
+                    "Connection successful",
+                    "You provided the correct credentials.");
 
             main.Main.loadHomeView(event, user);
 
         } else {
-            Alert wrong = new Alert(Alert.AlertType.ERROR);
-            wrong.setTitle("Connection unsuccessful");
-            wrong.setHeaderText("Incorrect credentials.");
-            wrong.showAndWait();
+            (new Main()).showAlert(
+                    Alert.AlertType.ERROR,
+                    "Connection unsuccessful",
+                    "Incorrect credentials.");
+
         }
     }
 
