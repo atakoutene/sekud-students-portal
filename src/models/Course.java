@@ -7,21 +7,25 @@ import java.io.File;
  * @author Roger NDJEUMOU
  */
 public class Course {
-    String idCourse ;
-    String title ;
-    String description ;
-    int credit ;
-    int passingScore ;
-    File syllabus ;
-    int idLecturer ;
+
+    private String idCourse;
+    private String title;
+    private String description;
+    private int credit;
+    private int passingScore;
+    private File syllabus;
+    private int idLecturer;
+
+    public Course() {
+    }
 
     public Course(String idCourse, String title) {
         this.idCourse = idCourse;
         this.title = title;
     }
 
-    public Course(String idCourse, String title, 
-            String description, int credit, int passingScore, 
+    public Course(String idCourse, String title,
+            String description, int credit, int passingScore,
             File syllabus, int idLecturer) {
         this.idCourse = idCourse;
         this.title = title;
@@ -64,8 +68,8 @@ public class Course {
         this.credit = credit;
     }
 
-    public int getPassingScore() {
-        return passingScore;
+    public char getPassingGrade() {
+        return passingScore >= 80 ? 'B' : 'C';
     }
 
     public void setPassingScore(int passingScore) {
@@ -87,5 +91,5 @@ public class Course {
     public void setIdLecturer(int idLecturer) {
         this.idLecturer = idLecturer;
     }
-    
+
 }

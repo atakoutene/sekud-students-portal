@@ -9,6 +9,14 @@ public class Lecturer {
     private int idDepartment ;
     private int idPerson ;
 
+    public Lecturer() {
+    }
+
+    public Lecturer(int id, int idPerson) {
+        this.id = id;
+        this.idPerson = idPerson;
+    }
+
     public Lecturer(int id, int idDepartment, int idPerson) {
         this.id = id;
         this.idDepartment = idDepartment;
