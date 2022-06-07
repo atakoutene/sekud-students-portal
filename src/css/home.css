@@ -33,8 +33,31 @@
 
 .button:hover {
     -fx-background-color: linear-gradient(#0C5070,#11719E) ; 
+    -fx-text-fill: #D1AC6D ;
+    -fx-underline: true ;
 }
 
 #barChart{
     -fx-text-fill: #11719E ;
+}
+
+.separator .line{
+    -fx-border-color: #D1AC6D;
+    -fx-border-width: 2 ;
+}
+
+.titled-pane > .title
+{
+    -fx-font: normal normal 18px 'Inter Black';
+}
+
+
+.titled-pane > .title > .text
+{
+    -fx-fill: #0C5070;
+}
+
+.table-view .column-header {
+    -fx-font: normal normal 16px 'Inter Black';
+    -fx-fill: #0C5070;
 }

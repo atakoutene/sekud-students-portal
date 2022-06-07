@@ -1,20 +1,24 @@
 package models;
 
-import java.sql.Time ;
+import java.sql.Time;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  *
  * @author Roger NDJEUMOU
  */
 public class CourseSchedule {
-    int idSchedule ;
-    String idCourse ;
-    String day ;
-    Time startTime ;
-    Time endTime ;
-    String room ;
 
-    public CourseSchedule(int idSchedule, String idCourse, 
+    int idSchedule;
+    String idCourse;
+    String day;
+    Time startTime;
+    Time endTime;
+    String room;
+
+    public CourseSchedule(int idSchedule, String idCourse,
             String day, Time startTime, Time endTime, String room) {
         this.idSchedule = idSchedule;
         this.idCourse = idCourse;
@@ -48,16 +52,16 @@ public class CourseSchedule {
         this.day = day;
     }
 
-    public Time getStartTime() {
-        return startTime;
+    public String getStartTime() {
+        return getFormattedTime(startTime);
     }
 
     public void setStartTime(Time startTime) {
         this.startTime = startTime;
     }
 
-    public Time getEndTime() {
-        return endTime;
+    public String getEndTime() {
+        return getFormattedTime(endTime);
     }
 
     public void setEndTime(Time endTime) {
@@ -71,5 +75,11 @@ public class CourseSchedule {
     public void setRoom(String room) {
         this.room = room;
     }
-    
+
+    private String getFormattedTime(Time time) {
+        Date myDate = new Date(time.getTime());
+        DateFormat df = new SimpleDateFormat("hh:mm a");
+        return df.format(myDate);
+    }
+
 }

@@ -1,0 +1,16 @@
+/* 
+    Created on : Jun 6, 2022, 3:08:35 PM
+    Author     : Roger NDJEUMOU
+*/
+
+.button {
+    -fx-font: normal normal 20px 'Inter Light' ;
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: white ;
+}
+
+.button:hover {
+    -fx-background-color: rgba(0,0,0,0);
+    -fx-text-fill: #D1AC6D ;
+    -fx-underline: true ;
+}

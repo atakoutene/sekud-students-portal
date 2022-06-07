@@ -8,6 +8,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 import models.Login;
@@ -21,6 +22,10 @@ public class Main extends Application {
     public static final String APP_NAME = "Sek\u00F9d";
 
     private static Stage stage;
+    public Image appLogo = new Image(Main.class
+            .getResourceAsStream("../images/sekud-logo.jpg"));
+
+    HostServices hostServices = getHostServices();
 
     public static Stage getStage() {
         return stage;
@@ -30,21 +35,29 @@ public class Main extends Application {
     public void start(Stage primaryStage) throws Exception {
 
         stage = primaryStage;
-        stage.getIcons().add(
-                new Image(Main.class.getResourceAsStream("../images/sekud-logo.jpg")));
+        stage.getIcons().add(appLogo);
+        setStage(APP_NAME + " - Login", "../views/LoginView.fxml");
+    }
+
+    public static void loadLoginView(ActionEvent event) throws Exception {
+        closeView(event);
         setStage(APP_NAME + " - Login", "../views/LoginView.fxml");
     }
 
     public static void loadHomeView(ActionEvent event, Login loginInfo)
             throws Exception {
         // Close the log in windows
-        Node node = (Node) event.getSource();
-        stage = (Stage) node.getScene().getWindow();
-        stage.close();
+        closeView(event);
 
         stage.setUserData(loginInfo); // Set data for home view
         // Launch home view
         setStage(APP_NAME + " - Home", "../views/homeView.fxml");
+    }
+
+    private static void closeView(ActionEvent event) {
+        Node node = (Node) event.getSource();
+        stage = (Stage) node.getScene().getWindow();
+        stage.close();
     }
 
     // Method to open new scene whose title is "title" and 
@@ -65,8 +78,20 @@ public class Main extends Application {
     }
 
     public void viewPDF(File file) {
-        HostServices hostServices = getHostServices();
         hostServices.showDocument(file.getAbsolutePath());
+    }
+
+    public void openBrowser(String url) {
+        hostServices.showDocument(url);
+    }
+
+    public void showAlert(Alert.AlertType type, String title, String message) {
+        Alert alert = new Alert(type);
+        Stage alertStage = (Stage) alert.getDialogPane().getScene().getWindow();
+        alertStage.getIcons().add(appLogo);
+        alert.setTitle(title);
+        alert.setHeaderText(message);
+        alert.showAndWait();
     }
 
     /**

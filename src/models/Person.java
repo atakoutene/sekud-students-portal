@@ -8,21 +8,46 @@ import javafx.scene.image.Image;
  * @author Roger NDJEUMOU
  */
 public class Person {
-    private int id ;
-    private int idLogin ;
-    private String lastName ;
-    private String firstName ;
-    private char gender ;
-    private Date dateOfBirth ;
-    private String phoneNumber ;
-    private String address ;
-    private String email ;
-    private Image photo ;
-    private String pseudo ;
-    private String status ;
-    private String title ;
 
-    public Person(int id, int idLogin, String lastName, String firstName, char gender, Date dateOfBirth, String phoneNumber, String address, String email, Image photo, String pseudo, String status, String title) {
+    private int id;
+    private int idLogin;
+    private String lastName;
+    private String firstName;
+    private char gender;
+    private Date dateOfBirth;
+    private String phoneNumber;
+    private String address;
+    private String email;
+    private Image photo;
+    private String pseudo;
+    private String status;
+    private String title;
+
+    public Person() {
+    }
+
+    public Person(int id, String lastName, String firstName,
+            String phoneNumber, String email, String title) {
+        this.id = id;
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.title = title;
+    }
+
+    public Person(String lastName, String firstName, 
+            String phoneNumber, String email) {
+        this.lastName = lastName;
+        this.firstName = firstName;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+    }
+
+    public Person(int id, int idLogin, String lastName, String firstName,
+            char gender, Date dateOfBirth, String phoneNumber,
+            String address, String email, Image photo, String pseudo,
+            String status, String title) {
         this.id = id;
         this.idLogin = idLogin;
         this.lastName = lastName;
@@ -133,5 +158,11 @@ public class Person {
     public void setPseudo(String pseudo) {
         this.pseudo = pseudo;
     }
-        
+
+    @Override
+    public String toString() {
+        return title + " " + firstName + " " + lastName + ". Phone: "
+                + phoneNumber +" Email: " + email;
+    }
+
 }
