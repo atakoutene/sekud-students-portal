@@ -31,6 +31,7 @@ import main.Main;
 import models.Book;
 import models.Course;
 import models.CourseSchedule;
+import models.LoadBarChart;
 import models.LectureNote;
 import models.Login;
 import models.Person;
@@ -85,7 +86,6 @@ public class HomeController implements Initializable {
     @FXML
     private ImageView userPhoto;
 
-    @FXML
     private Button btnHome;
 
     @FXML
@@ -96,8 +96,17 @@ public class HomeController implements Initializable {
 
     @FXML
     private Label welcomeLabel;
-
+    
     @FXML
+    private BorderPane homecontainer;
+    
+////////////////////////////////////////////////////
+    /*  @FXML
+    private BarChart<String, Double> barChart;
+     */
+    ArrayList<String> courseTitles;
+    ArrayList<Double> attendance_Rate;
+
     void openTimetable(ActionEvent event) {
         (new Main()).viewPDF(timetable.getTimetable());
     }
@@ -148,6 +157,7 @@ public class HomeController implements Initializable {
         markMenuButtonAsActive(btnHome);
         // Get user login info from stage and 
         // use it to retrieve user personal info
+
         loginInfo = (Login) main.Main.getStage().getUserData();
         personalInfo = manager.getPersonInfo(loginInfo.getId());
 
@@ -155,6 +165,8 @@ public class HomeController implements Initializable {
             studentInfo = manager.getStudentInfo(loginInfo.getRegNumber());
             timetable = manager.getTimetable(studentInfo.getIdProgram(), "Spring", 2022);
             currentSemeter = manager.getCurrentSemester();
+
+            displayAttendanceRate(studentInfo.getId());
 
             setLatestAssessments();
             setMyClassesToday();
@@ -582,6 +594,7 @@ public class HomeController implements Initializable {
             btnHome.getStylesheets().clear();
             btnHome.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
         }
+        
     }
 
     private void setWelcomeLabel() {
@@ -598,6 +611,29 @@ public class HomeController implements Initializable {
         userPhoto.setImage(personalInfo.getPhoto());
     }
 
+    private void displayAttendanceRate(String studentID/*, String idCourse*/) {
+        
+        TitledPane pane = new TitledPane();
+        pane.setText("My Attendance Rate");
+        pane.setAlignment(Pos.CENTER);
+        pane.setCollapsible(false);
+        
+        LoadBarChart chart = new LoadBarChart(studentID, mainContainer) ;
+        if (chart.isAttendanceAvailable()) {
+            pane.setContent(chart.getAttendanceChart());
+        } else {
+            pane.setContent(new Label("No attendance data available."));
+        }
+        
+        leftContainer.getChildren().add(pane);
+    }
+    
+//    public void displayLoadPresenceAbsence(LoadPresenceAbsenceDate presenceAbsence){
+//        //if(vBoxContainer.getChildren().contains(coursesTitledPane))
+//        //    vBoxContainer.getChildren().remove(coursesTitledPane); 
+//        //vBoxContainer.getChildren().add(presenceAbsence.getDatePresentAbsentForACourse());
+//        vBoxContainer.getChildren().add(0, new Label("YOUUUUPIIIIIIIIIIIIIIIIIIIII...!")) ;
+//    }
     private void scrollToTop() {
         mainScrollPane.setVvalue(mainScrollPane.getVmin());
     }

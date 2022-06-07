@@ -37,6 +37,10 @@
     -fx-underline: true ;
 }
 
+#barChart{
+    -fx-text-fill: #11719E ;
+}
+
 .separator .line{
     -fx-border-color: #D1AC6D;
     -fx-border-width: 2 ;
