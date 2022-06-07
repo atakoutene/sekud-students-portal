@@ -23,6 +23,7 @@
 
 .root {
     -fx-background-image: url("../images/Pkf-Main-Building.jpg") ;
+    -fx-background-size: stretch ;
     -fx-background-color: rgba(128, 128, 128, 0.4) ;
     -fx-background-radius: 20px ;
     -fx-font: normal normal 16pt "Inter Black" ;

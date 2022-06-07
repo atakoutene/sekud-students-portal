@@ -5,18 +5,21 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
 import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.geometry.Pos;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TitledPane;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import main.Main;
 import models.Course;
 import models.CourseSchedule;
+import models.LoadBarChart;
+import models.LoadPresenceAbsenceDate;
 import models.Login;
 import models.Person;
 import models.Student;
@@ -49,9 +52,26 @@ public class HomeController implements Initializable {
     private ImageView userPhoto;
 
     @FXML
+    private VBox leftContainer;
+    
+    @FXML
     private Label welcomeLabel;
+    
+    @FXML
+    private BorderPane homecontainer;
+    
+    @FXML
+    private VBox mainContainer;
 
     @FXML
+    private TitledPane  coursesTitledPane;
+////////////////////////////////////////////////////
+    /*  @FXML
+    private BarChart<String, Double> barChart;
+     */
+    ArrayList<String> courseTitles;
+    ArrayList<Double> attendance_Rate;
+
     void openTimetable(ActionEvent event) {
         (new Main()).viewPDF(timetable.getTimetable());
     }
@@ -66,6 +86,7 @@ public class HomeController implements Initializable {
     public void initialize(URL url, ResourceBundle rb) {
         // Get user login info from stage and 
         // use it to retrieve user personal info
+
         loginInfo = (Login) main.Main.getStage().getUserData();
         personalInfo = manager.getPersonInfo(loginInfo.getId());
 
@@ -73,7 +94,9 @@ public class HomeController implements Initializable {
             studentInfo = manager.getStudentInfo(loginInfo.getRegNumber());
             timetable = manager.getTimetable(studentInfo.getIdProgram(), "Spring", 2022);
 
-            setMyClassesToday();
+            displayAttendanceRate(studentInfo.getId());
+
+            //setMyClassesToday();
         }
 
         setWelcomeLabel();
@@ -86,12 +109,12 @@ public class HomeController implements Initializable {
                 = manager.getSchedule(studentInfo.getIdProgram(),
                         studentInfo.getIdLevel(),
                         dateUtil.getWeekDay());
-        
+
         schedules = (ArrayList<CourseSchedule>) objects.get(0);
         ArrayList<Course> courses = (ArrayList<Course>) objects.get(1);
 
         if (!schedules.isEmpty()) {
-            
+
             for (int i = 0; i < schedules.size(); i++) {
                 CourseSchedule sched = schedules.get(i);
                 String content = courses.get(i).getTitle() + " ("
@@ -106,19 +129,19 @@ public class HomeController implements Initializable {
                 boxClassesToday.getChildren().add(classToday);
             }
         } else {
-            Label noClassLabel = new Label("No class today.") ;
+            Label noClassLabel = new Label("No class today.");
             boxClassesToday.getChildren().add(noClassLabel);
         }
-        
+
         Button btnViewTimetable = new Button("My Timetable");
         btnViewTimetable.setAlignment(Pos.CENTER);
         btnViewTimetable.setOnAction((ActionEvent event) -> {
             openTimetable(event);
         });
-        
-        StackPane pane = new StackPane(btnViewTimetable) ;
-        
-        boxClassesToday.getChildren().add(pane) ;
+
+        StackPane pane = new StackPane(btnViewTimetable);
+
+        boxClassesToday.getChildren().add(pane);
     }
 
     private void setWelcomeLabel() {
@@ -133,5 +156,29 @@ public class HomeController implements Initializable {
     private void setProfilePicture() {
         userPhoto.setImage(personalInfo.getPhoto());
     }
+
+    private void displayAttendanceRate(String studentID/*, String idCourse*/) {
+        
+        TitledPane pane = new TitledPane();
+        pane.setText("My Attendance Rate");
+        pane.setAlignment(Pos.CENTER);
+        pane.setCollapsible(false);
+        
+        LoadBarChart chart = new LoadBarChart(studentID, mainContainer) ;
+        if (chart.isAttendanceAvailable()) {
+            pane.setContent(chart.getAttendanceChart());
+        } else {
+            pane.setContent(new Label("No attendance data available."));
+        }
+        
+        leftContainer.getChildren().add(pane);
+    }
+    
+//    public void displayLoadPresenceAbsence(LoadPresenceAbsenceDate presenceAbsence){
+//        //if(vBoxContainer.getChildren().contains(coursesTitledPane))
+//        //    vBoxContainer.getChildren().remove(coursesTitledPane); 
+//        //vBoxContainer.getChildren().add(presenceAbsence.getDatePresentAbsentForACourse());
+//        vBoxContainer.getChildren().add(0, new Label("YOUUUUPIIIIIIIIIIIIIIIIIIIII...!")) ;
+//    }
 
 }

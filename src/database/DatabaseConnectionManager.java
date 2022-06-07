@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.*;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -240,5 +241,109 @@ public class DatabaseConnectionManager {
         }
         
         return null ;
+    }
+    
+    
+    
+    public ArrayList<Object> retrieveCoursesAndAttendenceRateFromDatabase(String idStudent){
+        ArrayList<Object> object = new ArrayList<>();
+        ArrayList<Course> courses = new ArrayList<>();
+        ArrayList<Double> attendanceRate = new ArrayList<>();
+        String query = "SELECT course.course_id, course.course_title,course_sessions.semester_id, "
+                + "(COUNT(attendance.attendance_date)/course_sessions.num_sessions)*100.0 AS attendance_rate "
+                + "FROM course_sessions "
+                + "JOIN attendance ON course_sessions.course_id = attendance.course_id "
+                + "JOIN course ON attendance.course_id=course.course_id "
+                + "WHERE attendance.stud_id= ? "
+                + "GROUP BY course.course_title "
+                + "HAVING course_sessions.semester_id = MAX(course_sessions.semester_id) "
+                + "ORDER BY course.course_title;";
+        
+        try{
+           PreparedStatement prepStatement = connection.prepareStatement(query);
+           prepStatement.setString(1, idStudent); 
+           ResultSet rs = prepStatement.executeQuery();
+           while(rs.next()){
+               courses.add(new Course(rs.getString("course_id"),
+                       rs.getString("course_title")));
+               attendanceRate.add(rs.getDouble("attendance_rate"));
+           }
+           rs.close();
+        }
+        catch(SQLException e){
+            System.out.println("retrieve Courses And Attendence Rate From Database Error: " 
+                            + e.getMessage());
+        }
+        
+        object.add(courses);
+        object.add(attendanceRate);
+        
+        return object;
+}
+    public ArrayList<Object> retrieveDatePresentForACourseFromDatabase(String idStudent, String idCourse){
+        ArrayList<Object> object = new ArrayList<>();
+        String courseName ="";
+        ArrayList<java.util.Date> dates_present = new ArrayList<>();
+        //ArrayList<LocalDate> dates_present = new ArrayList<>();
+        String query = "SELECT attendance.`attendance_date`, attendance.semester_id, course.course_title "
+                + "FROM `attendance` JOIN course on attendance.course_id = course.course_id "
+                + "where attendance.course_id = ? and attendance.`stud_id` = ? "
+                + "GROUP by attendance.`attendance_date` "
+                + "having attendance.semester_id = MAX(attendance.semester_id);";
+        try{
+            PreparedStatement prepStatement = connection.prepareStatement(query);
+            prepStatement.setString(1, idCourse);
+            prepStatement.setString(2, idStudent);
+            ResultSet rs = prepStatement.executeQuery();
+           while(rs.next()){
+               //System.out.println(rs.getDate("attendance_date").getDate()+" "+rs.getDate("attendance_date").getMonth()+" "+(rs.getDate("attendance_date").getYear() + 1900));
+               dates_present.add(new java.util.Date(rs.getDate("attendance_date").getTime()));  // the getTime() method is udes to convert sql_date to util_date.
+               //dates_present.add(new LocalDate((rs.getDate("attendance_date").getYear() + 1900),(rs.getDate("attendance_date").getMonth() + 1), rs.getDate("attendance_date").getDate());
+               courseName = rs.getString("course_title");
+           }
+           
+           rs.close();
+
+        }
+        catch(SQLException e){
+            System.out.println("GET retrieve Date Present For A Course From Database ERROR: "
+                    + e.getMessage());  
+        }
+        
+        //return dates_present;
+        object.add(dates_present);
+        object.add(courseName);
+        return object;
+    }
+    
+    public ArrayList<Object> retrieveDateAbsentForACourseFromDatabase(String idStudent, String idCourse){
+        ArrayList<Object> object = new ArrayList<>();
+        ArrayList<java.util.Date> dates_absent = new ArrayList<>();
+        String query = "SELECT attendance.`attendance_date`, attendance.semester_id FROM `attendance` "
+                + "WHERE attendance.course_id = ? and (attendance.attendance_date,attendance.semester_id) "
+                + "NOT IN (SELECT attendance.`attendance_date` as date_present, attendance.semester_id "
+                + "FROM `attendance` where attendance.course_id = ? and attendance.`stud_id` = ? "
+                + "GROUP by attendance.`attendance_date` having attendance.semester_id = MAX(attendance.semester_id))"
+                + " GROUP BY attendance.`attendance_date` HAVING attendance.semester_id = MAX(attendance.semester_id);";
+        try{
+            PreparedStatement prepStatement = connection.prepareStatement(query);
+            prepStatement.setString(1, idCourse);
+            prepStatement.setString(2, idCourse);
+            prepStatement.setString(3, idStudent);            
+            ResultSet rs = prepStatement.executeQuery();
+           while(rs.next()){
+               dates_absent.add(new java.util.Date(rs.getDate("attendance_date").getTime()));  // the getTime() method is udes to convert sql_date to util_date.
+           }
+           rs.close();
+
+        }
+        catch(SQLException e){
+            System.out.println("GET retrieve Date Absent For A Course From Database ERROR: "
+                    + e.getMessage());  
+        }
+        
+        //return dates_absent;
+        object.add(dates_absent);
+        return object;
     }
 }

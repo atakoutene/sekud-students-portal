@@ -34,3 +34,7 @@
 .button:hover {
     -fx-background-color: linear-gradient(#0C5070,#11719E) ; 
 }
+
+#barChart{
+    -fx-text-fill: #11719E ;
+}
