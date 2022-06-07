@@ -1,0 +1,15 @@
+/* 
+    Created on : Jun 7, 2022, 11:50:48 AM
+    Author     : roger
+*/
+
+.titled-pane > .title
+{
+    -fx-font: normal normal 18px 'Inter Black';
+}
+
+
+.titled-pane > .title > .text
+{
+    -fx-fill: #0C5070;
+}

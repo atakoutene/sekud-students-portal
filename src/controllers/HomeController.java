@@ -2,6 +2,7 @@ package controllers;
 
 import database.DatabaseConnectionManager;
 import handlers.AssessmentManager;
+import handlers.LatestAssessmentManager;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -155,6 +156,7 @@ public class HomeController implements Initializable {
             timetable = manager.getTimetable(studentInfo.getIdProgram(), "Spring", 2022);
             currentSemeter = manager.getCurrentSemester();
 
+            setLatestAssessments();
             setMyClassesToday();
             setMyCourses();
             setMyHelp();
@@ -220,7 +222,7 @@ public class HomeController implements Initializable {
         }
 
         if (!mainContainer.getChildren().contains(coursesTitledPane)) {
-            mainContainer.getChildren().add(0, coursesTitledPane);
+            mainContainer.getChildren().add(1, coursesTitledPane);
         }
 
         if (!leftScrollPane.getContent().equals(leftContainer)) {
@@ -452,9 +454,16 @@ public class HomeController implements Initializable {
             }
             coursesTitledPane.setContent(coursesAccordion);
         }
-        mainContainer.getChildren().add(0, coursesTitledPane);
+        mainContainer.getChildren().add(1, coursesTitledPane);
     }
 
+    private void setLatestAssessments () {
+        LatestAssessmentManager assessment 
+                = new LatestAssessmentManager(studentInfo.getId());
+                mainContainer.getChildren()
+                        .add(0, assessment.getAssessTitledPane());
+    }
+    
     private void setMyClassesToday() {
         VBox classesTodayContainer = new VBox(5);
         ArrayList<Object> objects

@@ -8,11 +8,11 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import models.Book;
 import models.Course;
 import models.CourseSchedule;
+import models.LatestAssessment;
 import models.LectureNote;
 import models.Login;
 import models.Mark;
@@ -665,22 +665,57 @@ public class DatabaseConnectionManager {
                 + "JOIN student USING (par_id) "
                 + "WHERE student.stud_id = ? ;";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
-            ResultSet rs = ps.executeQuery() ;
-            if( rs.next() ) {
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
                 return new models.Parent(
-                        rs.getString("par_name"), 
-                        rs.getString("par_phone"), 
+                        rs.getString("par_name"),
+                        rs.getString("par_phone"),
                         rs.getString("par_email")
-                ) ;
-            } 
-        }catch (SQLException e) {
+                );
+            }
+        } catch (SQLException e) {
             System.out.println("GET PARENT INFO ERROR: "
                     + e.getMessage());
         }
+
+        return null;
+    }
+
+    public ArrayList<LatestAssessment> getLatestAssessment(String idStudent) {
+
+        ArrayList<LatestAssessment> latestAssessments 
+                = new ArrayList<>();
         
-        return null ;
+        String query = "SELECT `title`,`type`,`due_date`,"
+                + "latest_assessment.`course_id`, course.course_title\n"
+                + "FROM `latest_assessment` "
+                + "JOIN enrollment USING(course_id) "
+                + "JOIN course USING(course_id) "
+                + "WHERE due_date >= SYSDATE() AND enrollment.stud_id = ? "
+                + "ORDER BY due_date;";
+
+        try {
+            PreparedStatement prepStatement = connection.prepareStatement(query);
+            prepStatement.setString(1, idStudent);
+
+            ResultSet rs = prepStatement.executeQuery();
+            while (rs.next()) {
+                latestAssessments.add(new LatestAssessment(
+                        rs.getString("type"), 
+                        rs.getString("title"), 
+                        rs.getString("course_id"), 
+                        rs.getDate("due_date"), 
+                        rs.getString("course_title"))
+                );
+            }
+        } catch (SQLException e) {
+            System.out.println("GET LATEST ASSESSMENTS ERRORS: "
+                    + e.getMessage());
+        }
+
+        return latestAssessments;
     }
 
     private File getFile(String outputFileName,
