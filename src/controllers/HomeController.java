@@ -61,15 +61,16 @@ public class HomeController implements Initializable {
             = new DatabaseConnectionManager();
 
     @FXML
-    private VBox boxClassesToday;
-
-    @FXML
     private Label dateTimeLabel;
 
     private TitledPane coursesTitledPane;
+    private TitledPane resourcesTitledPane;
+    private TitledPane assessmentTitledPane;
+    private TitledPane helpTitledPane;
+    private TitledPane classesTodayTitledPane;
 
     @FXML
-    private VBox helpContainer;
+    private VBox leftContainer;
 
     @FXML
     private VBox mainContainer;
@@ -77,14 +78,20 @@ public class HomeController implements Initializable {
     @FXML
     private ScrollPane mainScrollPane;
 
-    private TitledPane resourcesTitledPane;
-    private TitledPane assessmentTitledPane;
+    @FXML
+    private ScrollPane leftScrollPane;
 
     @FXML
     private ImageView userPhoto;
 
     @FXML
     private Button btnHome;
+
+    @FXML
+    private Button btnMyProfile;
+
+    @FXML
+    private Button btnMyAcademicRecord;
 
     @FXML
     private Label welcomeLabel;
@@ -95,7 +102,7 @@ public class HomeController implements Initializable {
     }
 
     @FXML
-    void loadHomeContainers(ActionEvent event) {
+    void loadHome(ActionEvent event) {
         markMenuButtonAsActive(btnHome);
         goToHome();
     }
@@ -121,6 +128,12 @@ public class HomeController implements Initializable {
                     }
                 });
 
+    }
+
+    @FXML
+    void loadMyProfile(ActionEvent event) {
+        markMenuButtonAsActive(btnMyProfile);
+        goToMyProfile();
     }
 
     /**
@@ -209,6 +222,35 @@ public class HomeController implements Initializable {
         if (!mainContainer.getChildren().contains(coursesTitledPane)) {
             mainContainer.getChildren().add(0, coursesTitledPane);
         }
+
+        if (!leftScrollPane.getContent().equals(leftContainer)) {
+            leftScrollPane.setContent(leftContainer);
+        }
+        
+        mainScrollPane.setContent(mainContainer);
+    }
+
+    private void goToMyProfile() {
+        TitledPane parentTitledPane = new TitledPane();
+        parentTitledPane.setText("Parent Info");
+        parentTitledPane.setAlignment(Pos.CENTER);
+        parentTitledPane.setCollapsible(false);
+
+        models.Parent parent = manager.getParentInfo(studentInfo.getId());
+        if (parent != null) {
+            VBox box = new VBox(5);
+            box.getChildren().add(new Label("Name \n-> " + parent.getName()));
+            box.getChildren().add(new Label("Phone Number \n-> " + parent.getPhoneNumber()));
+            if (parent.getEmail() != null) {
+                box.getChildren().add(new Label("Email \n-> " + parent.getEmail()));
+            }
+            parentTitledPane.setContent(box);
+        } else {
+            parentTitledPane.setContent(
+                    new Label("No parent info available."));
+        }
+        leftScrollPane.setContent(parentTitledPane);
+        mainScrollPane.setContent(new Label("My Profile"));
     }
 
     private void goToResources(Course course) {
@@ -414,6 +456,7 @@ public class HomeController implements Initializable {
     }
 
     private void setMyClassesToday() {
+        VBox classesTodayContainer = new VBox(5);
         ArrayList<Object> objects
                 = manager.getSchedule(studentInfo, currentSemeter.getId(),
                         dateUtil.getWeekDay());
@@ -434,11 +477,11 @@ public class HomeController implements Initializable {
                         + " \n  " + content);
                 classToday.setWrapText(true);
 
-                boxClassesToday.getChildren().add(classToday);
+                classesTodayContainer.getChildren().add(classToday);
             }
         } else {
             Label noClassLabel = new Label("No class today.");
-            boxClassesToday.getChildren().add(noClassLabel);
+            classesTodayContainer.getChildren().add(noClassLabel);
         }
 
         Button btnViewTimetable = new Button("My Timetable");
@@ -449,14 +492,22 @@ public class HomeController implements Initializable {
 
         StackPane pane = new StackPane(btnViewTimetable);
 
-        boxClassesToday.getChildren().add(pane);
+        classesTodayContainer.getChildren().add(pane);
+
+        classesTodayTitledPane
+                = new TitledPane("My Courses Today", classesTodayContainer);
+        classesTodayTitledPane.setAlignment(Pos.CENTER);
+        classesTodayTitledPane.setCollapsible(false);
+
+        leftContainer.getChildren().add(0, classesTodayTitledPane);
     }
 
     private void setMyHelp() {
+        VBox helpContainer = new VBox(5);
         Label label
                 = new Label("Contact any of your student mentors:");
         label.setWrapText(true);
-        helpContainer.getChildren().add(label);
+        helpContainer.getChildren().addAll(label, new Separator());
 
         ArrayList<Object> objects
                 = manager.getMentorInfo(studentInfo.getId(),
@@ -482,23 +533,45 @@ public class HomeController implements Initializable {
 
                 helpContainer.getChildren().addAll(lblMentor, new Separator());
             }
+
+            helpTitledPane
+                    = new TitledPane("My Help", helpContainer);
+            helpTitledPane.setAlignment(Pos.CENTER);
+            helpTitledPane.setCollapsible(false);
+
+            leftContainer.getChildren().add( helpTitledPane);
         }
     }
 
     private void markMenuButtonAsActive(Button menuButton) {
-        menuButton.setStyle("-fx-font: normal normal 20px 'Inter Black' ;"
-                + "-fx-background-color: rgba(0,0,0,0);"
-                + "-fx-text-fill: #D1AC6D ;"
-                + "-fx-underline: true ;");
+        menuButton.getStylesheets().clear();
+        menuButton.getStylesheets().add(HomeController.class.getResource("../css/activeMenuButtonStyle.css").toString());
         if (menuButton.getScene() != null) {
             Stage window = (Stage) menuButton.getScene().getWindow();
             window.setTitle(Main.APP_NAME + " - " + menuButton.getText());
         }
+
+        disactivateOtherMenuButtons(menuButton);
     }
 
     private void disactivateOtherMenuButtons(Button exceptMe) {
         if (exceptMe.getId().equals(btnHome.getId())) {
-            // set the style of the othe buttons to normal.
+            btnMyProfile.getStylesheets().clear();
+            btnMyProfile.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
+            btnMyAcademicRecord.getStylesheets().clear();
+            btnMyAcademicRecord.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
+        }
+        if (exceptMe.getId().equals(btnMyProfile.getId())) {
+            btnHome.getStylesheets().clear();
+            btnHome.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
+            btnMyAcademicRecord.getStylesheets().clear();
+            btnMyAcademicRecord.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());            
+        }
+        if (exceptMe.getId().equals(btnMyAcademicRecord.getId())) {
+            btnMyProfile.getStylesheets().clear();
+            btnMyProfile.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
+            btnHome.getStylesheets().clear();
+            btnHome.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
         }
     }
 

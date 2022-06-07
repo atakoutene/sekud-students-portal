@@ -8,6 +8,7 @@ import java.sql.*;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.scene.Parent;
 import javafx.scene.image.Image;
 import models.Book;
 import models.Course;
@@ -218,8 +219,8 @@ public class DatabaseConnectionManager {
 
             ResultSet rs = ps.executeQuery();
             if (rs.next()) {
-                File timetableFile = getFile("output/timetable", 
-                        rs.getBinaryStream("timetable")) ;
+                File timetableFile = getFile("output/timetable",
+                        rs.getBinaryStream("timetable"));
                 return (new Timetable(
                         rs.getInt("timetable_id"),
                         rs.getInt("semester_id"),
@@ -290,8 +291,8 @@ public class DatabaseConnectionManager {
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                File syllabus = getFile("output/syllabus "+rs.getString("course_id"),
-                        rs.getBinaryStream("course_syllabus")) ;
+                File syllabus = getFile("output/syllabus " + rs.getString("course_id"),
+                        rs.getBinaryStream("course_syllabus"));
                 courses.add(new Course(
                         rs.getString("course_id"),
                         rs.getString("course_title"),
@@ -322,105 +323,105 @@ public class DatabaseConnectionManager {
 
         return infos;
     }
-    
+
     public ArrayList<Book> getCourseBooks(String idCourse) {
-        ArrayList<Book> books = new ArrayList<>() ;
+        ArrayList<Book> books = new ArrayList<>();
         String query = "SELECT `book_id`, `course_id`, "
                 + "`book_title`, `book_references`, "
-                + "`book_availability`, `book_link` " 
+                + "`book_availability`, `book_link` "
                 + "FROM `book` "
-                + "WHERE `course_id`= ? ;" ;
-        
+                + "WHERE `course_id`= ? ;";
+
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
-            ps.setString(1, idCourse) ;
-            ResultSet rs = ps.executeQuery() ;
-            while (rs.next()){
+            PreparedStatement ps = connection.prepareStatement(query);
+            ps.setString(1, idCourse);
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 books.add(
                         new Book(
-                                rs.getInt("book_id"), 
+                                rs.getInt("book_id"),
                                 idCourse,
                                 rs.getString("book_title"),
                                 rs.getString("book_references"),
                                 rs.getString("book_availability"),
                                 rs.getString("book_link")
                         )
-                ) ;
+                );
             }
         } catch (SQLException e) {
             System.out.println(
                     "GET COURSE BOOKS ERROR: "
                     + e.getMessage());
         }
-        
-        return books ;
+
+        return books;
     }
-    
+
     public ArrayList<UsefulLink> getCourseUsefulLinks(String idCourse) {
-        ArrayList<UsefulLink> links = new ArrayList<>() ;
+        ArrayList<UsefulLink> links = new ArrayList<>();
         String query = "SELECT `link_id`, `course_id`, "
                 + "`description`, `link` "
                 + "FROM `useful_link` "
-                + "WHERE `course_id`= ? ;" ;
+                + "WHERE `course_id`= ? ;";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            while (rs.next()) {                
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 links.add(
                         new UsefulLink(
-                                rs.getInt("link_id"), 
-                                idCourse, 
-                                rs.getString("description"), 
+                                rs.getInt("link_id"),
+                                idCourse,
+                                rs.getString("description"),
                                 rs.getString("link")
                         )
                 );
             }
         } catch (SQLException e) {
-            System.out.println("GET COURSE USEFUL LINK ERROR: " 
+            System.out.println("GET COURSE USEFUL LINK ERROR: "
                     + e.getMessage());
         }
-        
-        return links ;
+
+        return links;
     }
-    
-    public ArrayList<LectureNote> getCourseLectureNotes (String idCourse) {
-        ArrayList<LectureNote> notes = new ArrayList<>() ;
+
+    public ArrayList<LectureNote> getCourseLectureNotes(String idCourse) {
+        ArrayList<LectureNote> notes = new ArrayList<>();
         String query = "SELECT `note_id`, `course_id`, "
                 + "`note_description`, `note_pdf` "
                 + "FROM `lecture_note` WHERE `course_id`= ? ;";
-        
+
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            int i = 1 ;
-            while ( rs.next() ) {  
-                File noteFile = getFile("output/"+ idCourse
-                                        +" - Lecture note " + i, 
-                                        rs.getBinaryStream("note_pdf")) ;
+            ResultSet rs = ps.executeQuery();
+            int i = 1;
+            while (rs.next()) {
+                File noteFile = getFile("output/" + idCourse
+                        + " - Lecture note " + i,
+                        rs.getBinaryStream("note_pdf"));
                 notes.add(
                         new LectureNote(
-                                rs.getInt("note_id"), 
-                                idCourse, 
+                                rs.getInt("note_id"),
+                                idCourse,
                                 rs.getString("note_description"),
                                 noteFile
                         )
-                ) ;
-                i++ ;
+                );
+                i++;
             }
         } catch (SQLException e) {
-            System.out.println("GET COURSE LECTURE NOTES ERROR: " 
+            System.out.println("GET COURSE LECTURE NOTES ERROR: "
                     + e.getMessage());
         }
-        return notes ;
+        return notes;
     }
-    
-    public ArrayList<Object> getMentorInfo(String idStudent, 
-            int idSemeter, int idProgram){
-        ArrayList<Object> mentorsInfo = new ArrayList<>() ;
-        ArrayList<StudentMentor> mentors = new ArrayList<>() ;
-        ArrayList<Person> persons = new ArrayList<>() ;
+
+    public ArrayList<Object> getMentorInfo(String idStudent,
+            int idSemeter, int idProgram) {
+        ArrayList<Object> mentorsInfo = new ArrayList<>();
+        ArrayList<StudentMentor> mentors = new ArrayList<>();
+        ArrayList<Person> persons = new ArrayList<>();
         String query = "SELECT student_mentor.`stud_id`, "
                 + "`availability`, person.per_last_name, "
                 + "person.per_first_name, person.per_phone_number, "
@@ -430,239 +431,263 @@ public class DatabaseConnectionManager {
                 + "JOIN person USING (per_id) "
                 + "WHERE `stud_id` != ? AND `program_id` = ? "
                 + "AND `semester_id`=? "
-                + "ORDER BY person.per_last_name ASC;" ;
-        
+                + "ORDER BY person.per_last_name ASC;";
+
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setInt(2, idProgram);
             ps.setInt(3, idSemeter);
-            
-            ResultSet rs = ps.executeQuery() ;
-            while ( rs.next() ){
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 mentors.add(
                         new StudentMentor(
-                                rs.getString("stud_id"), 
+                                rs.getString("stud_id"),
                                 rs.getString("availability")
                         )
-                ) ;
+                );
                 persons.add(
                         new Person(
                                 rs.getString("per_last_name"),
-                                rs.getString("per_first_name"), 
+                                rs.getString("per_first_name"),
                                 rs.getString("per_phone_number"),
                                 rs.getString("per_email")
                         )
-                ) ;
+                );
             }
-            mentorsInfo.add(mentors) ;
-            mentorsInfo.add(persons) ;
+            mentorsInfo.add(mentors);
+            mentorsInfo.add(persons);
         } catch (SQLException e) {
             System.out.println(
                     "GET MENTOR INFO ERROR: "
                     + e.getMessage());
         }
-        
-        return mentorsInfo ;
+
+        return mentorsInfo;
     }
-    
+
     public ArrayList<Mark> getAllAssignmentMarks(String idCourse, String idStudent) {
-        ArrayList<Mark> assignmentMarks = new ArrayList<>() ;
+        ArrayList<Mark> assignmentMarks = new ArrayList<>();
         String query = "SELECT `ass_id`, `ass_mark`, `ass_date` "
                 + "FROM `assignment_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
                 + "ORDER BY `ass_date` ASC";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            while ( rs.next() ) {                
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 assignmentMarks.add(
                         new Mark(
-                                rs.getInt("ass_id"), 
-                                idCourse, 
-                                idStudent, 
-                                rs.getDouble("ass_mark"), 
+                                rs.getInt("ass_id"),
+                                idCourse,
+                                idStudent,
+                                rs.getDouble("ass_mark"),
                                 rs.getDate("ass_date")
                         )
-                ) ;
+                );
             }
         } catch (SQLException e) {
             System.out.println("GET ALL ASSIGNMENT MARKS ERROR: "
                     + e.getMessage());
         }
-        return assignmentMarks ;
+        return assignmentMarks;
     }
-    
+
     public double getAverageAssignmentMark(String idCourse, String idStudent) {
         String query = "SELECT AVG(`ass_mark`) AS avg_mark "
                 + "FROM `assignment_mark` "
-                + "WHERE `stud_id`=? AND `course_id`=? " ;
+                + "WHERE `stud_id`=? AND `course_id`=? ";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            if ( rs.next() ) {                
-                return rs.getDouble("avg_mark") ;
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("avg_mark");
             }
         } catch (SQLException e) {
             System.out.println("GET AVERAGE ASSIGNMENT MARK ERROR: "
                     + e.getMessage());
         }
-        return 0 ;
+        return 0;
     }
-    
+
     public ArrayList<Mark> getAllQuizMarks(String idCourse, String idStudent) {
-        ArrayList<Mark> quizMarks = new ArrayList<>() ;
+        ArrayList<Mark> quizMarks = new ArrayList<>();
         String query = "SELECT `quiz_id`,`quiz_mark`,`quiz_date` "
                 + "FROM `quiz_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
                 + "ORDER BY `quiz_date` ASC;";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            while ( rs.next() ) {                
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 quizMarks.add(
                         new Mark(
-                                rs.getInt("quiz_id"), 
-                                idCourse, 
-                                idStudent, 
-                                rs.getDouble("quiz_mark"), 
+                                rs.getInt("quiz_id"),
+                                idCourse,
+                                idStudent,
+                                rs.getDouble("quiz_mark"),
                                 rs.getDate("quiz_date")
                         )
-                ) ;
+                );
             }
         } catch (SQLException e) {
             System.out.println("GET ALL QUIZ MARKS ERROR: "
                     + e.getMessage());
         }
-        return quizMarks ;
+        return quizMarks;
     }
-    
+
     public double getAverageQuizMark(String idCourse, String idStudent) {
         String query = "SELECT AVG(`quiz_mark`) AS avg_mark "
                 + "FROM `quiz_mark` "
-                + "WHERE `stud_id`=? AND `course_id`=? " ;
+                + "WHERE `stud_id`=? AND `course_id`=? ";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            if ( rs.next() ) {                
-                return rs.getDouble("avg_mark") ;
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("avg_mark");
             }
         } catch (SQLException e) {
             System.out.println("GET AVERAGE QUIZ MARK ERROR: "
                     + e.getMessage());
         }
-        return 0 ;
+        return 0;
     }
-    
+
     public ArrayList<Mark> getAllTestMarks(String idCourse, String idStudent) {
-        ArrayList<Mark> testMarks = new ArrayList<>() ;
+        ArrayList<Mark> testMarks = new ArrayList<>();
         String query = "SELECT `test_id`,`test_mark`,`test_date` "
                 + "FROM `test_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
                 + "ORDER BY `test_date` ASC ;";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            while ( rs.next() ) {                
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 testMarks.add(
                         new Mark(
-                                rs.getInt("test_id"), 
-                                idCourse, 
-                                idStudent, 
-                                rs.getDouble("test_mark"), 
+                                rs.getInt("test_id"),
+                                idCourse,
+                                idStudent,
+                                rs.getDouble("test_mark"),
                                 rs.getDate("test_date")
                         )
-                ) ;
+                );
             }
         } catch (SQLException e) {
             System.out.println("GET ALL TEST MARKS ERROR: "
                     + e.getMessage());
         }
-        return testMarks ;
+        return testMarks;
     }
-    
+
     public double getAverageTestMark(String idCourse, String idStudent) {
         String query = "SELECT AVG(`test_mark`) AS avg_mark "
                 + "FROM `test_mark` "
-                + "WHERE `stud_id`=? AND `course_id`=? " ;
+                + "WHERE `stud_id`=? AND `course_id`=? ";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            if ( rs.next() ) {                
-                return rs.getDouble("avg_mark") ;
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("avg_mark");
             }
         } catch (SQLException e) {
             System.out.println("GET AVERAGE TEST MARK ERROR: "
                     + e.getMessage());
         }
-        return 0 ;
+        return 0;
     }
-    
+
     public ArrayList<ProjectMark> getAllProjectMarks(String idCourse, String idStudent) {
-        ArrayList<ProjectMark> projectMarks = new ArrayList<>() ;
+        ArrayList<ProjectMark> projectMarks = new ArrayList<>();
         String query = "SELECT `project_id`,project_name,`project_mark`,`project_date` "
                 + "FROM `project_mark` "
                 + "WHERE `stud_id`=? AND `course_id`=? "
                 + "ORDER BY `project_date` ASC ;";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            while ( rs.next() ) {                
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
                 projectMarks.add(
                         new ProjectMark(
-                                rs.getInt("project_id"), 
-                                idCourse, 
+                                rs.getInt("project_id"),
+                                idCourse,
                                 idStudent, rs.getString("project_name"),
-                                rs.getDouble("project_mark"), 
+                                rs.getDouble("project_mark"),
                                 rs.getDate("project_date")
                         )
-                ) ;
+                );
             }
         } catch (SQLException e) {
             System.out.println("GET ALL PROJECT MARKS ERROR: "
                     + e.getMessage());
         }
-        return projectMarks ;
+        return projectMarks;
     }
-    
+
     public double getAverageProjectMark(String idCourse, String idStudent) {
         String query = "SELECT AVG(`project_mark`) AS avg_mark "
                 + "FROM `project_mark` "
-                + "WHERE `stud_id`=? AND `course_id`=? " ;
+                + "WHERE `stud_id`=? AND `course_id`=? ";
         try {
-            PreparedStatement ps = connection.prepareStatement(query) ;
+            PreparedStatement ps = connection.prepareStatement(query);
             ps.setString(1, idStudent);
             ps.setString(2, idCourse);
-            ResultSet rs = ps.executeQuery() ;
-            if ( rs.next() ) {                
-                return rs.getDouble("avg_mark") ;
+            ResultSet rs = ps.executeQuery();
+            if (rs.next()) {
+                return rs.getDouble("avg_mark");
             }
         } catch (SQLException e) {
             System.out.println("GET AVERAGE PROJECT MARK ERROR: "
                     + e.getMessage());
         }
-        return 0 ;
+        return 0;
     }
-    
-    private File getFile(String outputFileName, 
+
+    public models.Parent getParentInfo(String idStudent) {
+        String query = "SELECT `par_name`, `par_phone`, `par_email` "
+                + "FROM `parent` "
+                + "JOIN student USING (par_id) "
+                + "WHERE student.stud_id = ? ;";
+        try {
+            PreparedStatement ps = connection.prepareStatement(query) ;
+            ps.setString(1, idStudent);
+            ResultSet rs = ps.executeQuery() ;
+            if( rs.next() ) {
+                return new models.Parent(
+                        rs.getString("par_name"), 
+                        rs.getString("par_phone"), 
+                        rs.getString("par_email")
+                ) ;
+            } 
+        }catch (SQLException e) {
+            System.out.println("GET PARENT INFO ERROR: "
+                    + e.getMessage());
+        }
+        
+        return null ;
+    }
+
+    private File getFile(String outputFileName,
             InputStream inputStream) {
         try {
             // Set up a handle to the output file
-            File file = new File(outputFileName+".pdf");
+            File file = new File(outputFileName + ".pdf");
             FileOutputStream output = new FileOutputStream(file);
 
             // Read Blob and store in output file
@@ -670,14 +695,14 @@ public class DatabaseConnectionManager {
             while (inputStream.read(buffer) > 0) {
                 output.write(buffer);
             }
-            
-            return file ;
+
+            return file;
         } catch (IOException e) {
             System.out.println("GET FILE ERROR: "
                     + e.getMessage());
         }
-        
-        return null ;
+
+        return null;
     }
-    
+
 }

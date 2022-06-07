@@ -12,6 +12,7 @@ import javafx.scene.chart.PieChart;
 import javafx.scene.chart.XYChart;
 import javafx.scene.control.Label;
 import javafx.scene.control.TitledPane;
+import javafx.scene.control.Tooltip;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import models.Mark;
@@ -93,7 +94,7 @@ public class AssessmentManager {
         // Add mouse pressed event
         Label caption = new Label("");
         caption.setTextFill(Color.rgb(209, 172, 109));
-        for (PieChart.Data data : pieChartData) {
+        for (PieChart.Data data : chart.getData()) {
             data.getNode().setOnMousePressed(
                     (MouseEvent event) -> {
                         caption.setTranslateX(event.getSceneX());
@@ -123,7 +124,16 @@ public class AssessmentManager {
             default ->
                 barChart.getData().add(getChartData(assignmentMarks, assessmentType));
         }
-
+        // Set tooltip on each bars of the chart
+        for (XYChart.Series<Number,String > series : barChart.getData()) {
+            for (XYChart.Data<Number, String> item : series.getData()) {
+                item.getNode().setOnMousePressed((MouseEvent event) -> {
+                    System.out.println("you clicked " + item.toString() + series.toString());
+                });
+                Tooltip.install(item.getNode(), new Tooltip(item.getXValue().toString()));
+            }
+        }
+        
         return new TitledPane(assessmentType, barChart);
     }
 
