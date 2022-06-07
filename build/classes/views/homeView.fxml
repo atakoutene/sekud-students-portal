@@ -2,17 +2,9 @@
 
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.Cursor?>
-<<<<<<< HEAD
-<?import javafx.scene.control.Accordion?>
-=======
->>>>>>> d8de9a6fc2eb66d5e034be18607c86b6314629cd
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ScrollPane?>
-<<<<<<< HEAD
-<?import javafx.scene.control.TitledPane?>
-=======
->>>>>>> d8de9a6fc2eb66d5e034be18607c86b6314629cd
 <?import javafx.scene.effect.DropShadow?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
@@ -27,7 +19,7 @@
 <?import javafx.scene.shape.Ellipse?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="homecontainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="976.0" style="-fx-background-color: #F9F7F7;" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.HomeController">
+<BorderPane fx:id="homecontainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="976.0" style="-fx-background-color: #F9F7F7;" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.HomeController">
    <top>
       <GridPane style="-fx-background-color: linear-gradient(#F9F7F7, #DBE2EF, #0C5070, #0C5070 100%);" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -63,7 +55,7 @@
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" height="20.0" offsetX="1.0" radius="9.5" spread="0.2" width="20.0">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -83,7 +75,7 @@
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" spread="0.2">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -91,14 +83,14 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnHome" alignment="CENTER" layoutX="519.0" layoutY="65.0" mnemonicParsing="false" onAction="#loadHome" text="Home" textAlignment="CENTER" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <Button fx:id="btnHome" alignment="CENTER" layoutX="519.0" layoutY="65.0" mnemonicParsing="false" onAction="#loadHome" stylesheets="@../css/activeMenuButtonStyle.css" text="Home" textAlignment="CENTER" textFill="WHITE" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <font>
                   <Font name="Gabriola" size="24.0" />
                </font>
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" spread="0.2">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -106,14 +98,14 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnMyAcademicRecord" alignment="CENTER" layoutX="28.0" layoutY="65.0" mnemonicParsing="false" text="My Academic Record" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <Button fx:id="btnMyAcademicRecord" alignment="CENTER" layoutX="28.0" layoutY="65.0" mnemonicParsing="false" stylesheets="@../css/normalMenuButtonStyle.css" text="My Academic Record" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <font>
                   <Font name="Gabriola" size="24.0" />
                </font>
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" spread="0.2">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -121,14 +113,14 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnMyProfile" alignment="CENTER" layoutX="110.0" layoutY="65.0" mnemonicParsing="false" onAction="#loadMyProfile" text="My Profile" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <Button fx:id="btnMyProfile" alignment="CENTER" layoutX="110.0" layoutY="65.0" mnemonicParsing="false" onAction="#loadMyProfile" stylesheets="@../css/normalMenuButtonStyle.css" text="My Profile" textFill="WHITE" GridPane.columnIndex="3" GridPane.halignment="LEFT" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <font>
                   <Font name="Gabriola" size="24.0" />
                </font>
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" spread="0.2">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -143,7 +135,7 @@
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" height="20.0" offsetX="1.0" radius="9.5" spread="0.2" width="20.0">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -177,7 +169,7 @@
                <effect>
                   <DropShadow blurType="ONE_PASS_BOX" height="20.0" offsetX="1.0" radius="9.5" spread="0.2" width="20.0">
                      <color>
-                        <Color blue="0.30588236451148987" green="0.1764705926179886" red="0.06666667014360428" />
+                        <Color red="0.06666667014360428" green="0.1764705926179886" blue="0.30588236451148987" />
                      </color>
                   </DropShadow>
                </effect>
@@ -188,40 +180,7 @@
    <center>
       <ScrollPane fx:id="mainScrollPane" fitToWidth="true" BorderPane.alignment="CENTER">
          <content>
-<<<<<<< HEAD
-            <VBox fx:id="mainContainer" spacing="10.0">
-               <children>
-                  <TitledPane fx:id="coursesTitledPane" collapsible="false" text="My Courses" textFill="#112d4e">
-                     <content>
-                        <Accordion>
-                           <panes>
-                              <TitledPane animated="false" text="General Chemistry">
-                                 <content>
-                                    <ListView />
-                                 </content>
-                              </TitledPane>
-                              <TitledPane animated="false" text="Principle of Physics 1">
-                                 <content>
-                                    <ListView />
-                                 </content>
-                              </TitledPane>
-                              <TitledPane animated="false" text="Introduction to C Programming">
-                                 <content>
-                                    <ListView />
-                                 </content>
-                              </TitledPane>
-                           </panes>
-                        </Accordion>
-                     </content>
-                     <font>
-                        <Font name="Gabriola" size="20.0" />
-                     </font>
-                  </TitledPane>
-               </children>
-            </VBox>
-=======
             <VBox fx:id="mainContainer" spacing="10.0" />
->>>>>>> d8de9a6fc2eb66d5e034be18607c86b6314629cd
          </content>
          <BorderPane.margin>
             <Insets bottom="10.0" left="10.0" right="10.0" top="10.0" />

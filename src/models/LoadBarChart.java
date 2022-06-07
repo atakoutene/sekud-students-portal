@@ -1,14 +1,9 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package models;
 
 /**
  *
  * @author leopo
  */
-import controllers.HomeController;
 import database.DatabaseConnectionManager;
 import java.util.ArrayList;
 import java.util.Date;
@@ -29,25 +24,28 @@ public class LoadBarChart {
     ArrayList<Date> datePresent;
     ArrayList<Date> dateAbsent;
     ArrayList<Object> objects;
-    
-    VBox centerContainer ;
-    ///////////////////
+
+    VBox centerContainer;
+
     String idStudent;
+
+    public LoadBarChart(VBox centerContainer) {
+        this.centerContainer = centerContainer;
+    }
+
     public LoadBarChart(String idStudent, VBox container) {
-        this.idStudent=idStudent;
-        this.centerContainer = container ;
+        this.idStudent = idStudent;
+        this.centerContainer = container;
         objects = manager.retrieveCoursesAndAttendenceRateFromDatabase(idStudent);
         if (!objects.isEmpty()) {
             courses = (ArrayList<Course>) objects.get(0);
             attendance_Rate = (ArrayList<Double>) objects.get(1);
-            
-            courseTitles = new ArrayList<>() ;
+
+            courseTitles = new ArrayList<>();
             for (int i = 0; i < courses.size(); i++) {
                 courseTitles.add(courses.get(i).getIdCourse());
             }
         }
-       // datePresent = manager.retrieveDatePresentForACourseFromDatabase(idStudent, idCourse);
-       // dateAbsent = manager.retrieveDateAbsentForACourseFromDatabase(idStudent, idCourse);
 
     }
 
@@ -55,6 +53,7 @@ public class LoadBarChart {
 
         CategoryAxis xAxis = new CategoryAxis();
         xAxis.setLabel("Courses");
+        xAxis.setTickLabelRotation(90);
         NumberAxis yAxis = new NumberAxis();
         yAxis.setLabel("Attendance Rate");
 
@@ -67,26 +66,29 @@ public class LoadBarChart {
 
         BarChart<String, Number> barChart = new BarChart<>(xAxis, yAxis);
         barChart.getData().add(series);
-        
-        for (XYChart.Series<String,Number> serie1: barChart.getData()){
-            for (XYChart.Data<String, Number> item: serie1.getData()){
+        barChart.setPrefWidth(160);
+
+        for (XYChart.Series<String, Number> serie1 : barChart.getData()) {
+            for (XYChart.Data<String, Number> item : serie1.getData()) {
                 item.getNode().setOnMousePressed((MouseEvent event) -> {
-                    //System.out.println("you clicked "+item.toString()+serie1.toString());
-                    LoadPresenceAbsenceDate presenceAbsence = new LoadPresenceAbsenceDate(idStudent,item.getXValue());
-                    centerContainer.getChildren().remove(0);
-                    centerContainer.getChildren().add(0, presenceAbsence.getDatePresentAbsentForACourse()) ;
-                    //item.getXValue();
+                    loadAttendance(idStudent, item.getXValue(), "");
                 });
             }
         }
-        
+
         barChart.setCursor(Cursor.HAND);
         return barChart;
-
     }
 
-    public boolean isAttendanceAvailable(){
-        return ! attendance_Rate.isEmpty() ;
+    public boolean isAttendanceAvailable() {
+        return !attendance_Rate.isEmpty();
     }
 
+    public void loadAttendance(String studentId, String courseId, String courseTitle) {
+        LoadPresenceAbsenceDate presenceAbsence 
+                = new LoadPresenceAbsenceDate(studentId, courseId);
+        centerContainer.getChildren().clear();
+        centerContainer.getChildren()
+                .add(0, presenceAbsence.getDatePresentAbsentForACourse(courseTitle));
+    }
 }

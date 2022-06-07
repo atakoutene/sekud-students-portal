@@ -57,23 +57,23 @@ public class LatestAssessmentManager {
             TableColumn titleCol = new TableColumn("Title");
             titleCol.setCellValueFactory(new PropertyValueFactory<>("title"));
 
-            TableColumn typeCol = new TableColumn("Assessment Type");
+            TableColumn typeCol = new TableColumn("Type");
             typeCol.setCellValueFactory(new PropertyValueFactory<>("type"));
-            
+
             TableColumn courseCol = new TableColumn("Course");
             courseCol.setCellValueFactory(new PropertyValueFactory<>("course"));
 
             TableColumn dueDateCol = new TableColumn("Date");
             dueDateCol.setCellValueFactory(new PropertyValueFactory<>("dueDate"));
             dueDateCol.setSortable(false);
-            
+
             table.setItems(tableData);
             table.getColumns().addAll(titleCol, typeCol, dueDateCol, courseCol);
 
             int rowHeight = 30;
             table.setFixedCellSize(rowHeight);
             tableHeightHelper(table, rowHeight);
-            
+
             assessTitledPane.setContent(table);
 
         } else {
@@ -81,13 +81,13 @@ public class LatestAssessmentManager {
         }
 
     }
-    
+
     public void tableHeightHelper(TableView<?> table, int rowHeight) {
-    table.prefHeightProperty().bind(Bindings.max(2, Bindings.size(table.getItems()))
-                                            .multiply(rowHeight)
-                                            .add(rowHeight));
-    table.minHeightProperty().bind(table.prefHeightProperty());
-    table.maxHeightProperty().bind(table.prefHeightProperty());
-}
+        table.prefHeightProperty().bind(Bindings.max(2, Bindings.size(table.getItems()))
+                .multiply(rowHeight)
+                .add(rowHeight));
+        table.minHeightProperty().bind(table.prefHeightProperty());
+        table.maxHeightProperty().bind(table.prefHeightProperty());
+    }
 
 }

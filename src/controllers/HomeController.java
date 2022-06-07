@@ -58,18 +58,21 @@ public class HomeController implements Initializable {
 
     ArrayList<CourseSchedule> schedules;
     ArrayList<Course> enrolledCourses;
+    ArrayList<String> courseTitles;
+    ArrayList<Double> attendance_Rate;
 
     DatabaseConnectionManager manager
             = new DatabaseConnectionManager();
-
-    @FXML
-    private Label dateTimeLabel;
 
     private TitledPane coursesTitledPane;
     private TitledPane resourcesTitledPane;
     private TitledPane assessmentTitledPane;
     private TitledPane helpTitledPane;
     private TitledPane classesTodayTitledPane;
+    private TitledPane latestAssessmentTitledPane;
+
+    @FXML
+    private Label dateTimeLabel;
 
     @FXML
     private VBox leftContainer;
@@ -86,6 +89,7 @@ public class HomeController implements Initializable {
     @FXML
     private ImageView userPhoto;
 
+    @FXML
     private Button btnHome;
 
     @FXML
@@ -96,16 +100,9 @@ public class HomeController implements Initializable {
 
     @FXML
     private Label welcomeLabel;
-    
+
     @FXML
     private BorderPane homecontainer;
-    
-////////////////////////////////////////////////////
-    /*  @FXML
-    private BarChart<String, Double> barChart;
-     */
-    ArrayList<String> courseTitles;
-    ArrayList<Double> attendance_Rate;
 
     void openTimetable(ActionEvent event) {
         (new Main()).viewPDF(timetable.getTimetable());
@@ -154,7 +151,6 @@ public class HomeController implements Initializable {
      */
     @Override
     public void initialize(URL url, ResourceBundle rb) {
-        markMenuButtonAsActive(btnHome);
         // Get user login info from stage and 
         // use it to retrieve user personal info
 
@@ -177,6 +173,8 @@ public class HomeController implements Initializable {
         setWelcomeLabel();
         setDateTimeLabel();
         setProfilePicture();
+
+        //markMenuButtonAsActive(btnHome);
     }
 
     private void goToAssessments(Course course, String idStudent) {
@@ -216,31 +214,20 @@ public class HomeController implements Initializable {
                     new Label("No marks available for this course"));
         }
 
-        if (mainContainer.getChildren().contains(coursesTitledPane)) {
-            mainContainer.getChildren().remove(coursesTitledPane);
-        }
-
+        mainContainer.getChildren().clear();
         mainContainer.getChildren().add(0, assessmentTitledPane);
         scrollToTop();
     }
 
     private void goToHome() {
-        if (mainContainer.getChildren().contains(resourcesTitledPane)) {
-            mainContainer.getChildren().remove(resourcesTitledPane);
-        }
-
-        if (mainContainer.getChildren().contains(assessmentTitledPane)) {
-            mainContainer.getChildren().remove(assessmentTitledPane);
-        }
-
-        if (!mainContainer.getChildren().contains(coursesTitledPane)) {
-            mainContainer.getChildren().add(1, coursesTitledPane);
-        }
+        mainContainer.getChildren().clear();
+        mainContainer.getChildren().add(0,latestAssessmentTitledPane);
+        mainContainer.getChildren().add(1, coursesTitledPane);
 
         if (!leftScrollPane.getContent().equals(leftContainer)) {
             leftScrollPane.setContent(leftContainer);
         }
-        
+
         mainScrollPane.setContent(mainContainer);
     }
 
@@ -385,10 +372,7 @@ public class HomeController implements Initializable {
             resourcesTitledPane.setContent(accordion);
         }
 
-        if (mainContainer.getChildren().contains(coursesTitledPane)) {
-            mainContainer.getChildren().remove(coursesTitledPane);
-        }
-
+        mainContainer.getChildren().clear();
         mainContainer.getChildren().add(0, resourcesTitledPane);
         scrollToTop();
 
@@ -437,13 +421,20 @@ public class HomeController implements Initializable {
                     btnAssessMark.setOnAction(event -> {
                         goToAssessments(course, studentInfo.getId());
                     });
+                    
                     Button btnAttendance = new Button("Attendance");
                     btnAttendance.setTooltip(new Tooltip("View attendance details."));
+                    btnAttendance.setOnAction((event) -> {
+                        (new LoadBarChart(mainContainer))
+                                .loadAttendance(studentInfo.getId(), course.getIdCourse(), course.getTitle());
+                    });
+                    
                     Button btnResources = new Button("Resources");
                     btnResources.setTooltip(new Tooltip("Get available course documentatiion."));
                     btnResources.setOnAction(event -> {
                         goToResources(course);
                     });
+                    
                     Button btnSyllabus = new Button("Syllabus");
                     btnSyllabus.setTooltip(new Tooltip("View syllabus for "
                             + course.getIdCourse()));
@@ -469,13 +460,14 @@ public class HomeController implements Initializable {
         mainContainer.getChildren().add(1, coursesTitledPane);
     }
 
-    private void setLatestAssessments () {
-        LatestAssessmentManager assessment 
+    private void setLatestAssessments() {
+        LatestAssessmentManager assessment
                 = new LatestAssessmentManager(studentInfo.getId());
-                mainContainer.getChildren()
-                        .add(0, assessment.getAssessTitledPane());
+        latestAssessmentTitledPane = assessment.getAssessTitledPane();
+        mainContainer.getChildren()
+                .add(0, latestAssessmentTitledPane);
     }
-    
+
     private void setMyClassesToday() {
         VBox classesTodayContainer = new VBox(5);
         ArrayList<Object> objects
@@ -560,7 +552,7 @@ public class HomeController implements Initializable {
             helpTitledPane.setAlignment(Pos.CENTER);
             helpTitledPane.setCollapsible(false);
 
-            leftContainer.getChildren().add( helpTitledPane);
+            leftContainer.getChildren().add(helpTitledPane);
         }
     }
 
@@ -586,7 +578,7 @@ public class HomeController implements Initializable {
             btnHome.getStylesheets().clear();
             btnHome.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
             btnMyAcademicRecord.getStylesheets().clear();
-            btnMyAcademicRecord.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());            
+            btnMyAcademicRecord.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
         }
         if (exceptMe.getId().equals(btnMyAcademicRecord.getId())) {
             btnMyProfile.getStylesheets().clear();
@@ -594,7 +586,7 @@ public class HomeController implements Initializable {
             btnHome.getStylesheets().clear();
             btnHome.getStylesheets().add(HomeController.class.getResource("../css/normalMenuButtonStyle.css").toString());
         }
-        
+
     }
 
     private void setWelcomeLabel() {
@@ -611,29 +603,23 @@ public class HomeController implements Initializable {
         userPhoto.setImage(personalInfo.getPhoto());
     }
 
-    private void displayAttendanceRate(String studentID/*, String idCourse*/) {
-        
+    private void displayAttendanceRate(String studentID) {
+
         TitledPane pane = new TitledPane();
         pane.setText("My Attendance Rate");
         pane.setAlignment(Pos.CENTER);
         pane.setCollapsible(false);
-        
-        LoadBarChart chart = new LoadBarChart(studentID, mainContainer) ;
+
+        LoadBarChart chart = new LoadBarChart(studentID, mainContainer);
         if (chart.isAttendanceAvailable()) {
             pane.setContent(chart.getAttendanceChart());
         } else {
             pane.setContent(new Label("No attendance data available."));
         }
-        
+
         leftContainer.getChildren().add(pane);
     }
-    
-//    public void displayLoadPresenceAbsence(LoadPresenceAbsenceDate presenceAbsence){
-//        //if(vBoxContainer.getChildren().contains(coursesTitledPane))
-//        //    vBoxContainer.getChildren().remove(coursesTitledPane); 
-//        //vBoxContainer.getChildren().add(presenceAbsence.getDatePresentAbsentForACourse());
-//        vBoxContainer.getChildren().add(0, new Label("YOUUUUPIIIIIIIIIIIIIIIIIIIII...!")) ;
-//    }
+
     private void scrollToTop() {
         mainScrollPane.setVvalue(mainScrollPane.getVmin());
     }

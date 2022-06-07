@@ -89,7 +89,7 @@ public class AssessmentManager {
                 fail));
 
         final PieChart chart = new PieChart(pieChartData);
-        chart.setLegendSide(Side.LEFT);
+        chart.setLegendSide(Side.BOTTOM);
         chart.setLabelLineLength(10);
         // Add mouse pressed event
         Label caption = new Label("");
