@@ -13,7 +13,7 @@ public class MyDate {
         "March", "April", "May", "June", "July", "August",
         "September", "October", "November", "December"
     };
-    private static final String[] DAYS = {"Invalid","Sunday", "Monday",
+    private static final String[] DAYS = {"Invalid", "Sunday", "Monday",
         "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
     };
     int year;
@@ -50,6 +50,12 @@ public class MyDate {
 
     public int getDay() {
         return day;
+    }
+
+    public String getStringDate() {
+        return String.format("%s, %02d/%02d/%04d",
+                DAYS[calendar.get(GregorianCalendar.DAY_OF_WEEK)],
+                day, month, year);
     }
 
     public void setDate(long elapsedTime) {
