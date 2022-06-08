@@ -19,7 +19,7 @@
 <?import javafx.scene.shape.Ellipse?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane fx:id="homecontainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="976.0" style="-fx-background-color: #F9F7F7;" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.HomeController">
+<BorderPane fx:id="homeContainer" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="600.0" prefWidth="976.0" style="-fx-background-color: #F9F7F7;" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.HomeController">
    <top>
       <GridPane style="-fx-background-color: linear-gradient(#F9F7F7, #DBE2EF, #0C5070, #0C5070 100%);" BorderPane.alignment="CENTER">
         <columnConstraints>
@@ -98,7 +98,7 @@
                   <Cursor fx:constant="HAND" />
                </cursor>
             </Button>
-            <Button fx:id="btnMyAcademicRecord" alignment="CENTER" layoutX="28.0" layoutY="65.0" mnemonicParsing="false" stylesheets="@../css/normalMenuButtonStyle.css" text="My Academic Record" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
+            <Button fx:id="btnMyAcademicRecord" alignment="CENTER" layoutX="28.0" layoutY="65.0" mnemonicParsing="false" onAction="#onMyAcademicRecord" stylesheets="@../css/normalMenuButtonStyle.css" text="My Academic Record" textAlignment="CENTER" textFill="WHITE" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
                <font>
                   <Font name="Gabriola" size="24.0" />
                </font>

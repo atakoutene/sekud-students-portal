@@ -19,6 +19,10 @@ public class Course {
     public Course() {
     }
 
+    public Course(String idCourse) {
+        this.idCourse = idCourse;
+    }
+    
     public Course(String idCourse, String title) {
         this.idCourse = idCourse;
         this.title = title;
