@@ -3,6 +3,7 @@ package controllers;
 import database.DatabaseConnectionManager;
 import handlers.AssessmentManager;
 import handlers.LatestAssessmentManager;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.ResourceBundle;
@@ -40,7 +41,9 @@ import models.Student;
 import models.StudentMentor;
 import models.Timetable;
 import models.UsefulLink;
+import util.AcademicRecordContainer;
 import util.MyDate;
+import util.MyProfileCenterContainer;
 
 /**
  * FXML Controller class
@@ -102,7 +105,15 @@ public class HomeController implements Initializable {
     private Label welcomeLabel;
 
     @FXML
-    private BorderPane homecontainer;
+    private BorderPane homeContainer;
+
+    int numberOfSemester;
+
+    ArrayList<Object> objects;
+    ArrayList<Semester> list;
+
+    AcademicRecordContainer academicRecord = new AcademicRecordContainer();
+    MyProfileCenterContainer profile = new MyProfileCenterContainer();
 
     void openTimetable(ActionEvent event) {
         (new Main()).viewPDF(timetable.getTimetable());
@@ -112,6 +123,14 @@ public class HomeController implements Initializable {
     void loadHome(ActionEvent event) {
         markMenuButtonAsActive(btnHome);
         goToHome();
+        academicRecord.switchFromAcademicRecordToParent(academicRecord, mainScrollPane, homeContainer);
+    }
+
+    @FXML
+    void onMyAcademicRecord(ActionEvent event) throws IOException {
+        markMenuButtonAsActive(btnMyAcademicRecord);
+        updateLeftContainer();
+        academicRecord.switchFromParentToAcademicRecord(mainScrollPane, academicRecord, personalInfo, studentInfo, manager, homeContainer);
     }
 
     @FXML
@@ -141,6 +160,7 @@ public class HomeController implements Initializable {
     void loadMyProfile(ActionEvent event) {
         markMenuButtonAsActive(btnMyProfile);
         goToMyProfile();
+        profile.switchFromParentToAcademicRecord(profile, personalInfo, studentInfo, manager, homeContainer, mainScrollPane);
     }
 
     /**
@@ -157,6 +177,13 @@ public class HomeController implements Initializable {
         loginInfo = (Login) main.Main.getStage().getUserData();
         personalInfo = manager.getPersonInfo(loginInfo.getId());
 
+        // Fredy: START
+        btnMyAcademicRecord.setTooltip(new Tooltip("Click to view your academic record"));
+        btnMyProfile.setTooltip(new Tooltip("Click to view your personal profile"));
+        mainScrollPane.setVisible(true);
+        academicRecord.getViewButton().setVisible(true);
+        // Fredy: END
+        
         if (loginInfo.getType().equalsIgnoreCase("STUDENT")) {
             studentInfo = manager.getStudentInfo(loginInfo.getRegNumber());
             timetable = manager.getTimetable(studentInfo.getIdProgram(), "Spring", 2022);
@@ -170,11 +197,17 @@ public class HomeController implements Initializable {
             setMyHelp();
         }
 
-        setWelcomeLabel();
+        setWelcomeLabel(profile);
         setDateTimeLabel();
         setProfilePicture();
 
-        //markMenuButtonAsActive(btnHome);
+        
+        //Call the method so that when the home view is displayed it automatically generates the charts so that 
+        //they are just generated once for a student
+        loadChartsIntoTheMyAcademicRecordScrollPane();
+        
+        //method to load the content of the my profile once when we enter the home window
+        loadMyProfileContent();
     }
 
     private void goToAssessments(Course course, String idStudent) {
@@ -221,14 +254,11 @@ public class HomeController implements Initializable {
 
     private void goToHome() {
         mainContainer.getChildren().clear();
-        mainContainer.getChildren().add(0,latestAssessmentTitledPane);
+        mainContainer.getChildren().add(0, latestAssessmentTitledPane);
         mainContainer.getChildren().add(1, coursesTitledPane);
 
-        if (!leftScrollPane.getContent().equals(leftContainer)) {
-            leftScrollPane.setContent(leftContainer);
-        }
-
         mainScrollPane.setContent(mainContainer);
+        updateLeftContainer();
     }
 
     private void goToMyProfile() {
@@ -421,20 +451,20 @@ public class HomeController implements Initializable {
                     btnAssessMark.setOnAction(event -> {
                         goToAssessments(course, studentInfo.getId());
                     });
-                    
+
                     Button btnAttendance = new Button("Attendance");
                     btnAttendance.setTooltip(new Tooltip("View attendance details."));
                     btnAttendance.setOnAction((event) -> {
-                        (new LoadBarChart(mainContainer))
+                        (new LoadBarChart(mainScrollPane))
                                 .loadAttendance(studentInfo.getId(), course.getIdCourse(), course.getTitle());
                     });
-                    
+
                     Button btnResources = new Button("Resources");
                     btnResources.setTooltip(new Tooltip("Get available course documentatiion."));
                     btnResources.setOnAction(event -> {
                         goToResources(course);
                     });
-                    
+
                     Button btnSyllabus = new Button("Syllabus");
                     btnSyllabus.setTooltip(new Tooltip("View syllabus for "
                             + course.getIdCourse()));
@@ -589,10 +619,14 @@ public class HomeController implements Initializable {
 
     }
 
-    private void setWelcomeLabel() {
-        welcomeLabel.setText("Welcome "
-                + manager.getPseudo(loginInfo.getId())
-        );
+    public void setWelcomeLabel(MyProfileCenterContainer profile) {
+        if (profile.getPseudoValue().getText().isEmpty()) {
+            welcomeLabel.setText("Welcome "
+                    + manager.getPseudo(loginInfo.getId()));
+        } else {
+            welcomeLabel.setText("Welcome "
+                    + profile.getPseudoValue().getText());
+        }
     }
 
     private void setDateTimeLabel() {
@@ -602,6 +636,12 @@ public class HomeController implements Initializable {
     private void setProfilePicture() {
         userPhoto.setImage(personalInfo.getPhoto());
     }
+    
+    private void updateLeftContainer() {
+        if (!leftScrollPane.getContent().equals(leftContainer)) {
+            leftScrollPane.setContent(leftContainer);
+        }
+    }
 
     private void displayAttendanceRate(String studentID) {
 
@@ -610,7 +650,7 @@ public class HomeController implements Initializable {
         pane.setAlignment(Pos.CENTER);
         pane.setCollapsible(false);
 
-        LoadBarChart chart = new LoadBarChart(studentID, mainContainer);
+        LoadBarChart chart = new LoadBarChart(studentID, mainScrollPane);
         if (chart.isAttendanceAvailable()) {
             pane.setContent(chart.getAttendanceChart());
         } else {
@@ -620,6 +660,34 @@ public class HomeController implements Initializable {
         leftContainer.getChildren().add(pane);
     }
 
+    // Fredy: START
+    public Button getMyAcademicRecordButton() {
+        return btnMyAcademicRecord;
+    }
+
+    //This method is used to load the charts representing the marks of the student per semester in the scrollPane
+    //So that the myAcademic button is now used to just switch to the academic view!
+    public void loadChartsIntoTheMyAcademicRecordScrollPane() {
+        numberOfSemester = manager.getStudentDistinctSemesterIdFromFinalMarkTable(studentInfo.getId());
+        objects = manager.getStudentFinalMarks(studentInfo.getId());
+        list = (ArrayList<Semester>) objects.get(1);
+        ArrayList<Semester> list2 = new ArrayList<>();
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i - 1).getId() != list.get(i).getId()) {
+                list2.add(list.get(i - 1));
+                list2.add(list.get(i));
+            }
+        }
+        for (int i = 0; i < numberOfSemester; i++) {
+            academicRecord.displayLabeledBarChart(studentInfo, list2.get(i), numberOfSemester);
+        }
+    }
+
+    public void loadMyProfileContent() {
+        profile.settingMyProfileBorderPane(personalInfo, studentInfo, manager, homeContainer, mainScrollPane, this);
+    }
+
+    // Fredy: END
     private void scrollToTop() {
         mainScrollPane.setVvalue(mainScrollPane.getVmin());
     }

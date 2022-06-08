@@ -1,7 +1,3 @@
-/*
- * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
- * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
- */
 package models;
 
 import database.DatabaseConnectionManager;
@@ -43,7 +39,7 @@ public class LoadPresenceAbsenceDate {
 
         TitledPane pane = new TitledPane();
         pane.setCollapsible(false);
-        pane.setText("Attendance Rate - " +(courseTitle.equals("") ? courseName : courseTitle));
+        pane.setText("Attendance Rate - " + (courseTitle.equals("") ? courseName : courseTitle));
         TableView<ClassAbsenceAndPresenceDate> tableView = new TableView<>();
         TableColumn<ClassAbsenceAndPresenceDate, String> dateColumn = new TableColumn<>("Date");
         dateColumn.setCellValueFactory(new PropertyValueFactory<>("newDateFormat"));

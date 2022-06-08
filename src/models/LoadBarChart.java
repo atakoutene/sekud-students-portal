@@ -12,6 +12,7 @@ import javafx.scene.chart.BarChart;
 import javafx.scene.chart.CategoryAxis;
 import javafx.scene.chart.NumberAxis;
 import javafx.scene.chart.XYChart;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.VBox;
 
@@ -25,17 +26,17 @@ public class LoadBarChart {
     ArrayList<Date> dateAbsent;
     ArrayList<Object> objects;
 
-    VBox centerContainer;
+    ScrollPane centerScrollContainer;
 
     String idStudent;
 
-    public LoadBarChart(VBox centerContainer) {
-        this.centerContainer = centerContainer;
+    public LoadBarChart(ScrollPane centerContainer) {
+        this.centerScrollContainer = centerContainer;
     }
 
-    public LoadBarChart(String idStudent, VBox container) {
+    public LoadBarChart(String idStudent, ScrollPane container) {
         this.idStudent = idStudent;
-        this.centerContainer = container;
+        this.centerScrollContainer = container;
         objects = manager.retrieveCoursesAndAttendenceRateFromDatabase(idStudent);
         if (!objects.isEmpty()) {
             courses = (ArrayList<Course>) objects.get(0);
@@ -87,8 +88,6 @@ public class LoadBarChart {
     public void loadAttendance(String studentId, String courseId, String courseTitle) {
         LoadPresenceAbsenceDate presenceAbsence 
                 = new LoadPresenceAbsenceDate(studentId, courseId);
-        centerContainer.getChildren().clear();
-        centerContainer.getChildren()
-                .add(0, presenceAbsence.getDatePresentAbsentForACourse(courseTitle));
+        centerScrollContainer.setContent(presenceAbsence.getDatePresentAbsentForACourse(courseTitle));
     }
 }
