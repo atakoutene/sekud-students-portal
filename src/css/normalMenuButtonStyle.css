@@ -3,14 +3,16 @@
     Author     : Roger NDJEUMOU
 */
 
-.button {
-    -fx-font: normal normal 20px 'Inter Light' ;
-    -fx-background-color: rgba(0,0,0,0);
-    -fx-text-fill: white ;
+#btnSignUp {
+    -fx-background-color: linear-gradient( #11719E, #0C5070) ;    
 }
 
-.button:hover {
-    -fx-background-color: rgba(0,0,0,0);
-    -fx-text-fill: #D1AC6D ;
-    -fx-underline: true ;
+#btnSignUp:hover {
+    -fx-background-color: linear-gradient( #0C5070, #11719E) ;    
+}
+
+.button {
+    -fx-text-fill: white ;
+    -fx-cursor: hand ;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 10, 0.0, 1, 1);
 }
